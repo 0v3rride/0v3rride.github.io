@@ -6,7 +6,7 @@
 ```markdown
  https://host.example.com/runJob.html?__76&jobId=**#**__
 ```
-However, I discovered that simply removing that small portion (&76) from the URL had no affect on the content in the webpage that was produced from a response. This means there was no need for finding a pattern or predicting the number that would be produced every time a request was sent. You know what this means?
+However, I discovered that simply removing that small portion (&76) from the URL had no affect on the content in the webpage that was produced from a response. This means there was no need for finding a pattern or predicting the number that would be produced every time a request was sent. Do you know what that means?
 
 ```markdown
  https://host.example.com/runJob.html?jobId=__#__
