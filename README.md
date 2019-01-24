@@ -1,4 +1,4 @@
-![Linkedin](Site%20Pictures/linkedin.png)       Linkedin ![Github](Site%20Pictures/github.png) Github
+![Linkedin](Site%20Pictures/linkedin.png)Linkedin                                                                                       ![Github](Site%20Pictures/github.png)Github
 
 # How Fat-Fingering a URL Led Me To Discovering An Undisclosed Vulnerability
 
