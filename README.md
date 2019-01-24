@@ -1,5 +1,5 @@
-![Linkedin](Site%20Pictures/linkedin.png)Linkedin[https://www.linkedin.com/in/ryangore/]
-![Github](Site%20Pictures/github.png)Github[https://github.com/0v3rride]
+![Linkedin](Site%20Pictures/linkedin.png)[Linkedin](https://www.linkedin.com/in/ryangore/)
+![Github](Site%20Pictures/github.png)[Github](https://github.com/0v3rride)
 
 # How Fat-Fingering a URL Led Me To Discovering An Undisclosed Vulnerability
 
