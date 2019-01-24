@@ -1,4 +1,5 @@
-![Linkedin](Site%20Pictures/linkedin.png)Linkedin                                                                                       ![Github](Site%20Pictures/github.png)Github
+![Linkedin](Site%20Pictures/linkedin.png)Linkedin 
+![Github](Site%20Pictures/github.png)Github
 
 # How Fat-Fingering a URL Led Me To Discovering An Undisclosed Vulnerability
 
@@ -29,7 +30,7 @@ While automating the requests with the Burpsuite intruder tool, I discoved a mul
  
  **If you have the ability to turn on any multi-factor authentication for anything I would strongly suggest you do so immediately!**
  
- 2. **Account Take Over & Gaining A Foothold In The On Premises AD Enviroment** - Access Manager, in my opinion, also doesn't have a great way of letting users reset their password if they forgot it or if their account got locked. I'm not a hundered precent sure if it was this specific instance or for all Access Manager instances. 
+ 2. **Account Take Over & Gaining A Foothold In The On Premises AD Enviroment** - Access Manager, in my opinion, also doesn't have a great way of letting users reset their password if they forgot it or if they get locked out of their account. I'm not a hundered precent sure if it was this specific instance or for all Access Manager instances. 
  
 Let me explain, for a user to reset their password or unlock their account they simply need to answer 3 of 5 secret personal questions. The same problem concerning the way users choose their passwords also applies to how users pick their super-duper secret answers to their secret questions.
 
@@ -39,6 +40,6 @@ Let me explain, for a user to reset their password or unlock their account they 
  * **Super-duper secret answer:** ford, toyota, rav4, corolla, etc.
  * **A potentially better answer:** sterling silver general motors company sierra, etc. (plus one if answer is case sensitive)
  
-Do you see what I mean? A wordlist of car makes and models could easily be generated. To top it all off, Access Manager allows users to set their own secret questions (what is your favorite color?). Not to mention at this point an attacker could easily make reasonable inferences or peform OSINT on individuals with the list of usernames they enumerated Eventual this could end up leading to the possibility of discovering that user drives a certain make, model, color and year of car. An attacker can essentially make the process of resetting or unlocking an Active Directory account through a web portal trivial by using simple guessing, inferences, OSINT techniques and tools.
+Do you see what I mean? A wordlist of car makes and models could easily be generated. To top it all off, Access Manager allows users to set their own secret questions (what is your favorite color?). Not to mention at this point an attacker could make reasonable inferences or peform OSINT on individuals with the list of usernames they enumerated Eventual this could end up leading to the possibility of discovering that user drives a certain make, model, color and year of car. An attacker can essentially make the process of resetting or unlocking an Active Directory account through a web portal trivial by using simple guessing, inferences, OSINT techniques and tools.
 
  3. **Possible Denial of Service** - During the automation of the requests, I also discovered that possibly had the opportunity to cancel backup jobs, synchronizaiton jobs and other jobs running on the back-end. This could possibly affect an orginization in multiple ways. Such as users not having access to their accounts, etc.
