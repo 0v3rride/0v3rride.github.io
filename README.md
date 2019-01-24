@@ -27,13 +27,13 @@ While automating the requests with the Burpsuite intruder tool, I discoved a mul
    * Backup jobs
    
 ### Potential Opportunites To Leverage
- 1. **Password Spraying/Reverse Brute forcing** - The username enumeration aspect of this issue makes this activity much more trivial since we have half of the equation; all we need is a valid password. Believe or not people still use awful passwords. To make this aspect even worse, some people like to reuse their password(s) across multiple online services and places whether it's at work, school etc. These things are what makes password spraying the best thing since sliced bread. Keep in mind that one would have to be cognizant of the account lockout policies in place in the internal AD enviroment since Access Manager ties in with it. 
+##### Password Spraying/Reverse Brute forcing
+The username enumeration aspect of this issue makes this activity much more trivial since we have half of the equation; all we need is a valid password. Believe or not people still use awful passwords. To make this aspect even worse, some people like to reuse their password(s) across multiple online services and places whether it's at work, school etc. These things are what makes password spraying the best thing since sliced bread. Keep in mind that one would have to be cognizant of the account lockout policies in place in the internal AD enviroment since Access Manager ties in with it. 
  
- **If you have the ability to turn on any multi-factor authentication for anything I would strongly suggest you do so immediately!**
+ **If you have the ability to turn on any multi-factor authentication for anything I would strongly suggest you do so immediately!!!**
  
- 2. **Account Take Over & Gaining A Foothold In The On Premises AD Enviroment** - Access Manager, in my opinion, also doesn't have a great way of letting users reset their password if they forgot it or if they get locked out of their account. I'm not a hundered precent sure if it was this specific instance or for all Access Manager instances. 
- 
-Let me explain, for a user to reset their password or unlock their account they simply need to answer 3 of 5 secret personal questions. The same problem concerning the way users choose their passwords also applies to how users pick their super-duper secret answers to their secret questions.
+##### Account Take Over & Gaining A Foothold In The On Premises AD Enviroment 
+Access Manager, in my opinion, also doesn't have a great way of letting users reset their password if they forgot it or if they get locked out of their account. I'm not a hundered precent sure if it was this specific instance or for all Access Manager instances. Let me explain, for a user to reset their password or unlock their account they simply need to answer 3 of 5 secret personal questions. The same problem concerning the way users choose their passwords also applies to how users pick their super-duper secret answers to their secret questions.
 
 ![Secret Questions](Site%20Pictures/password-reset.jpg)
 
@@ -43,4 +43,5 @@ Let me explain, for a user to reset their password or unlock their account they 
  
 Do you see what I mean? A wordlist of car makes and models could easily be generated. To top it all off, Access Manager allows users to set their own secret questions (what is your favorite color?). Not to mention at this point an attacker could make reasonable inferences or peform OSINT on individuals with the list of usernames they enumerated Eventual this could end up leading to the possibility of discovering that user drives a certain make, model, color and year of car. An attacker can essentially make the process of resetting or unlocking an Active Directory account through a web portal trivial by using simple guessing, inferences, OSINT techniques and tools.
 
- 3. **Possible Denial of Service** - During the automation of the requests, I also discovered that possibly had the opportunity to cancel backup jobs, synchronizaiton jobs and other jobs running on the back-end. This could possibly affect an orginization in multiple ways. Such as users not having access to their accounts, etc.
+##### Possible Denial of Service
+During the automation of the requests, I also discovered that possibly had the opportunity to cancel backup jobs, synchronizaiton jobs and other jobs running on the back-end. This could possibly affect an orginization in multiple ways. Such as users not having access to their accounts, etc.
