@@ -1,5 +1,5 @@
 # How Fat-Fingering a URL Led Me To Discovering An Undisclosed Vulnerability
-![Linkedin]() ![Github]()
+![Linkedin]() ![Github](Site%20Pictures/github.png)
 
 ### Preface
 
