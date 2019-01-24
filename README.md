@@ -5,6 +5,7 @@
 
 
 ### Preface
+![LogonBox Limited Access Manager]()
 
 ```markdown
  https://host.example.com/runJob.html?__76&jobId=**#**__
@@ -34,7 +35,7 @@ While automating the requests with the Burpsuite intruder tool, I discoved a mul
  
 Let me explain, for a user to reset their password or unlock their account they simply need to answer 3 of 5 secret personal questions. The same problem concerning the way users choose their passwords also applies to how users pick their super-duper secret answers to their secret questions.
 
-![Secret Questions]()
+![Secret Questions](Site%20Pictures/password-reset.jpg)
 
  * **Secret question:** What was the first car you owned?
  * **Super-duper secret answer:** ford, toyota, rav4, corolla, etc.
