@@ -8,7 +8,7 @@
 
 ![LogonBox Limited Access Manager](Site%20Pictures/nervepoint_vx.png)
 
-###### [Image provided by LogonBox Limited & Hypersocket Software](https://www.hypersocket.com/en/products/password-self-service)
+############### [Image provided by LogonBox Limited & Hypersocket Software](https://www.hypersocket.com/en/products/password-self-service)
 
 ```markdown
  https://host.example.com/runJob.html?__76&jobId=**#**__
