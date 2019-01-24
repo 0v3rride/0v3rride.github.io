@@ -11,12 +11,12 @@
 ############### [Image provided by LogonBox Limited & Hypersocket Software](https://www.hypersocket.com/en/products/password-self-service)
 
 ```markdown
- https://host.example.com/runJob.html?__76&jobId=**#**__
+ https://host.example.com/runJob.html?76&jobId=#
 ```
 However, I discovered that simply removing that small portion (&76) from the URL had no affect on the content in the webpage that was produced from a response. This means there was no need for finding a pattern or predicting the number that would be produced every time a request was sent. Do you know what that means?
 
 ```markdown
- https://host.example.com/runJob.html?jobId=__#__
+ https://host.example.com/runJob.html?jobId=#
 ```
 This means that one can easily automate requests with a tool such as Burpsuite's intruder tool. This made it easier to identify what types of jobs were running on the back-end of the server that an unauthenticated attacker could access from the main public web page. 
 
@@ -42,7 +42,8 @@ Access Manager, in my opinion, also doesn't have a great way of letting users re
 
  * **Secret question:** What was the first car you owned?
  * **Super-duper secret answer:** ford, toyota, rav4, corolla, etc.
- * **A potentially better answer:** sterling silver general motors company sierra, etc. (plus one if answer is case sensitive)
+ * **A potentially better answer:** sterling silver general motors company sierra, etc. _(Plus one if answer is case sensitive)_
+ * **An even better answer:** boeing F/A-18E/F Super Hornet _(That's not a car, that's a twin-engine, carrier capable, multirole fighter aircraft)_
  
 Do you see what I mean? A wordlist of car makes and models could easily be generated. To top it all off, Access Manager allows users to set their own secret questions (what is your favorite color?). Not to mention at this point an attacker could make reasonable inferences or peform OSINT on individuals with the list of usernames they enumerate. An attacker can essentially make the process of resetting or unlocking an Active Directory account through a web portal trivial by using simple guessing, inferences, OSINT techniques and tools.
 
