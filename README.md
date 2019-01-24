@@ -3,11 +3,13 @@
 
 # How Fat-Fingering a URL Led Me To Discovering An Undisclosed Vulnerability (CVE 2019-6716)
 
-
 ### Preface
 
-##### Official Summary of issue
-> An unauthenticated Insecure Direct Object Reference (IDOR) vulnerability in LogonBox's (formerly Nervepoint Technologies) Access Manager (specific version not specified) web application allows a remote attacker to enumerate internal Active Directory usernames. It also allows for the possibility to enumerate Active Directory group names and altering back-end server jobs (backup and synchronization jobs) depending on the configuration of the system via the simple manipulation of the jobId HTTP parameter in an HTTP GET request. This issue affects Access Manager versions 1.2 - 1.4-RG3. This issue has been addressed in versions >= 1.4-RG4.
+##### Official Summary Of Issue
+> An unauthenticated Insecure Direct Object Reference (IDOR) vulnerability in LogonBox Limited's (formerly Nervepoint Technologies) Access Manager (specific version not specified) web application allows a remote attacker to enumerate internal Active Directory usernames. It also allows for the possibility to enumerate Active Directory group names and altering of back-end server jobs (backup and synchronization jobs) depending on the configuration of the system via the simple manipulation of the jobId HTTP parameter in an HTTP GET request. This issue affects Access Manager versions >= 1.2 <= 1.4-RG3 and has been rectified in versions >= 1.4-RG4.
+
+
+?????????????????????????????????????????????????????????????
 
 ![LogonBox Limited Access Manager](Site%20Pictures/nervepoint_vx.png)
 
@@ -54,7 +56,6 @@ Do you see what I mean? A wordlist of car makes and models could easily be gener
 During the automation of the requests, I also discovered that possibly had the opportunity to cancel backup jobs, synchronizaiton jobs and other jobs running on the back-end. This could possibly affect an orginization in multiple ways. Such as users not having access to their accounts, etc.
 
 ### Credits
-
  * [A fantastic guide from Michael Benich that summarizes the CVE process for beginners](https://warroom.rsmus.com/beginners-guide-cve-process/)
  * [Official CVE MITRE ID request form](https://cveform.mitre.org/)
  * **A special thanks to the team at LogonBox Limted and Hypersocket software for effective communication and cooperation**
