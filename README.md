@@ -73,7 +73,7 @@ During the automation of the requests, I also discovered that possibly had the o
 I'd also like to mention that LogonBox Limited & Hypersocket Software allow for the integration of the [yubico key](https://www.yubico.com/works-with-yubikey/catalog/logonbox/) for true multi-factor authentication. I'm not entirely sure if this can integrate with the on prem Access Manager product as opposed to the cloud solution.
 
 
-##### Credits
+### Credits
  * [A very helpful guide from Michael Benich that summarizes the CVE process for beginners](https://warroom.rsmus.com/beginners-guide-cve-process/)
  * [Official CVE MITRE ID request form](https://cveform.mitre.org/)
  * [**A special thanks to the team at LogonBox Limted and Hypersocket software for effective communication and cooperation**](https://docs.hypersocket.com/app/manpage/en/article/539661/Unauthenticated-Insecure-Direct-Object-Reference-(IDOR)-Found-in-Access-Manager)
