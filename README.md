@@ -63,7 +63,7 @@ Do you see what I mean? A wordlist of car makes and models could easily be craft
 
 In addition, Access Manager allows an administrator to [enable multiple methods for authentication](https://docs.logonbox.com/app/manpage/en/article/532476/Allowing-multiple-Authentication-Methods-to-be-active-for-login-processes-in-Access-Manager) such as OTP, PIN, SMS, etc. At least one to two alternative [authentication methods](https://docs.logonbox.com/app/manpage/en/article/532236/Authentication-Basics:-Configuring-and-managing) should be used to replace the secret questions method in this case.
 
-**It should be noted that using secret questions and answers _NOT_ a valid form of MFA nor is it a good way to verify the identity of a user! The password and answers to the secret questions are both something the user knows."
+**It should be noted that using secret questions and answers _NOT_ a valid form of MFA nor is it a good way to verify the identity of a user! The password and answers to the secret questions are both something the user knows."**
 
 ##### Possible Denial of Service
 During the automation of the requests, I also discovered that possibly had the opportunity to cancel backup jobs, synchronization jobs and other jobs running on the back-end. This could possibly affect an organization in multiple ways. Such as users not having access to their accounts, etc.
