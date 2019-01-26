@@ -61,7 +61,7 @@ In my case, the running instance of Access Manager also didn't have a great way 
  
 Do you see what I mean? A wordlist of car makes and models could easily be crafted. Access Manager also allows users to set their own secret questions. _What is your favorite color?_ Not to mention at this point an attacker could make reasonable inferences or perform OSINT on individuals with the list of usernames they enumerate. The process of resetting or unlocking an Active Directory account through a web portal can be made trivial by using simple guessing, inferences, OSINT techniques and tools. 
 
-In addition, Access Manager allows an administrator to [enable multiple methods for authentication](Allowing multiple Authentication Methods to be active for login processes in Access Manager) such as OTP, PIN, SMS, etc. At least one to two alternative [authentication methods](https://docs.logonbox.com/app/manpage/en/article/532236/Authentication-Basics:-Configuring-and-managing) should be used to replace the secret questions method in this case.
+In addition, Access Manager allows an administrator to enable [multiple methods for authentication](Allowing multiple Authentication Methods to be active for login processes in Access Manager) such as OTP, PIN, SMS, etc. At least one to two alternative [authentication methods](https://docs.logonbox.com/app/manpage/en/article/532236/Authentication-Basics:-Configuring-and-managing) should be used to replace the secret questions method in this case.
 
 **It should be noted that using secret questions and answers _NOT_ a valid form of MFA nor is it a good way to verify the identity of a user! The password and answers to the secret questions are both something the user knows."
 
