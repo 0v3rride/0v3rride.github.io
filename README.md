@@ -1,7 +1,7 @@
 ![Linkedin](Site%20Pictures/linkedin.png)[Linkedin](https://www.linkedin.com/in/ryangore/)
 ![Github](Site%20Pictures/github.png)[Github](https://github.com/0v3rride)
 
-# How Fat-Fingering a URL Led Me To Discovering An Undisclosed Vulnerability (CVE 2019-6716)
+# How Fat-Fingering a URL Led Me To Obtaining My First CVE ID (2019-6716)
 
 ### Preface
 
@@ -69,7 +69,7 @@ During the automation of the requests, I also discovered that possibly had the o
 
 
 ### Conclusion
-I'd also like to mention that LogonBox Limited & Hypersocket Software allow for the integration of the [yubico key](https://www.yubico.com/works-with-yubikey/catalog/logonbox/) for true multi-factor authentication. I'm not entirely sure if this can integrate with the Access Manager product as it can with their cloud solution.
+I'd also like to mention that LogonBox Limited & Hypersocket Software allow for the integration of the [yubico key](https://www.yubico.com/works-with-yubikey/catalog/logonbox/) for true multi-factor authentication. I'm not entirely sure if this can integrate with the on prem Access Manager product as opposed to the cloud solution.
 
 
 ##### Credits
