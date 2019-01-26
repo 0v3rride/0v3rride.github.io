@@ -19,12 +19,12 @@ Finding the issue in the web application was really quite simple after accidentl
 I was informed after further testing by the Hypersocket team that they were only able to enumerate AD usernames (2 to 3 out of a sample of 150). They weren't able to enumerate AD group names or cancel any jobs running on the back-end. However, in my case I was able to enumerate many more AD usernames. This is most likely due to the fact that the sample size I was working with was much larger. I suspect that the possiblity to enumerate AD group names and cancel jobs running on the back-end may be dependent on the configuration of a specific instance of Access Manager that is running.
 
 ### Proof Of Concept
-Again, this issue was trivial to identify. It has the classic makings of an Insecure Direct Object Reference. Simply changing the integer value for the jobId HTTP GET parameter to view information that an unauthenticated user probably shouldn't be able to view.
+Again, this issue was trivial to identify. It has the classic makings of an Insecure Direct Object Reference. Simply changing the integer value for the jobId HTTP GET parameter to view information that an unauthenticated user probably shouldn't be able to view did the trick.
 
 ```markdown
  https://host.example.com/runJob.html?76&jobId=#
 ```
-Furthermore, I discovered that simply removing that small portion (&76) from the URL had no affect on the content in the webpage that was produced from a response. This means there was no need for finding a pattern or predicting the number that would be produced every time a request was sent. Do you know what that means?
+Furthermore, I discovered that simply removing that small portion (&76) from the URL had no affect on the content in the webpage that was produced from a response. This means there was no need for finding a pattern or predicting the integer value that would be produced every time a request was sent. Do you know what that means?
 
 ```markdown
  https://host.example.com/runJob.html?jobId=#
