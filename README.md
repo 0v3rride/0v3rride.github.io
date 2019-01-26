@@ -44,7 +44,7 @@ While automating the requests with the Burpsuite intruder tool, I discovered a m
    
 ### Potential Opportunites To Leverage From The Perspective Of An Attacker
 ##### Password Spraying/Reverse Brute forcing
-The username enumeration aspect of this issue makes this activity much more trivial since we have half of the equation; all we need is a valid password. Believe or not people still use awful passwords. To make this aspect even worse, some people like to reuse their password(s) across multiple online services, work account, school account, etc. These things are what makes password spraying the best thing since sliced bread. Keep in mind that one would have to be cognizant of the account lockout policies in place in the internal or Azure AD environments since Access Manager can tie in with either of those. 
+The username enumeration aspect of this issue makes this activity much more trivial since we have half of the equation; all we need is a valid password. Believe or not people still use awful passwords. To make this aspect even worse, some people like to reuse their password(s) across multiple online services, work account, school account, etc. These things are what currently makes password spraying the best thing since sliced bread. Keep in mind that one would have to be cognizant of the account lockout policies in place in the internal or Azure AD environments since Access Manager can tie in with either of those. 
  
  **If you have the ability to turn on any multi-factor authentication for anything I would strongly suggest you do so immediately!!!**
  
