@@ -22,12 +22,12 @@ I was informed after further testing by the Hypersocket team that they were only
 Again, this issue was trivial to identify. It has the classic makings of an Insecure Direct Object Reference. Simply changing the integer value for the jobId HTTP GET parameter to view information that an unauthenticated user probably shouldn't be able to view did the trick.
 
 ```markdown
- https://host.example.com/runJob.html?76&jobId=#
+ https://host.example.com/runJob.html?76&jobId=**<#>**
 ```
-Furthermore, I discovered that simply removing that small portion (&76) from the URL had no effect on the content in the webpage that was produced from a response. This means there was no need for finding a pattern or predicting the integer value that would be produced every time a request was sent. Do you know what that means?
+Furthermore, I discovered that simply removing that small portion (76&) from the URL had no effect on the content in the webpage that was produced from a response. This means there was no need for finding a pattern or predicting the integer value that would be produced every time a request was sent. Do you know what that means?
 
 ```markdown
- https://host.example.com/runJob.html?jobId=#
+ https://host.example.com/runJob.html?**jobId=<#>**
 ```
 This means that an attacker can easily automate requests with a tool such as PortSwigger's Brupsuite intruder module. This made it easier to identify what types of jobs were running on the back-end of the server that an unauthenticated attacker could access from the main public page of the web application.
 
