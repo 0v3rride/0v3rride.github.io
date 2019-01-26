@@ -52,7 +52,7 @@ The username enumeration aspect of this issue makes this activity much more triv
 In my case, the running instance of Access Manager also didn't have a great way of letting users reset their password if they forgot it or if they get locked out of their account. For a user to reset their password or unlock their account they simply need to answer 3 of 5 secret personal questions. The same problem concerning the way users choose their passwords also applies to how users pick their super-duper secret answers to their secret questions.
 
 ![Secret Questions](Site%20Pictures/password-reset.jpg)
-Generic screenshot pulled from a Google search
+###### Generic screenshot pulled from a Google search
 
  * **Secret question:** What was the first car you owned?
  * **Super-duper secret answer:** ford, toyota, rav4, corolla, etc.
