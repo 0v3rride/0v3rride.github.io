@@ -14,7 +14,7 @@ LogonBox Limited's (formerly Nervepoint technologies) and Hypersocket software's
 
 ###### [The above image belongs to LogonBox Limited & Hypersocket Software](https://www.hypersocket.com/en/products/password-self-service)
 
-Finding the issue in the web application was really quite simple after accidently mis-typing the URL. It took me a couple of seconds to realize what was happeing as I wasn't purposefully audting the web application for issues. As I incremented the number in the jobId parameter Active Directory names, and potentially AD group names were being returned in response. I could see users who had recently changed their passwords and then the synchronization jobs running for different AD groups that these users were part of. I was also presented with the chance to cancel these sync jobs, backup jobs and an other types of jobs if I wanted **(Spoiler alert: I didn't try to see if I could).** I informed the Hypersocket software team of this issue immediately and I recieved a prompt response that they were able to rectify the issue and push out the patch to their customer base.
+Finding the issue in the web application was really quite simple after accidently mis-typing the URL. It took me a couple of seconds to realize what was happeing as I wasn't purposefully audting the web application for issues. As I incremented the number in the jobId parameter, Active Directory names and potentially AD group names were being returned in response. I could see users who had recently changed their passwords and then the synchronization jobs running for different AD groups that these users were part of. I was also presented with the chance to cancel these sync jobs, backup jobs and an other types of jobs if I wanted **(Spoiler alert: I didn't try to see if I could).** I informed the Hypersocket software team of this issue immediately and I recieved a prompt response that they were able to rectify the issue and push out the patch to their customer base.
 
 I was informed after further testing by the Hypersocket team that they were only able to enumerate AD usernames (2 to 3 out of a sample of 150). They weren't able to enumerate AD group names or cancel any jobs running on the back-end. However, in my case I was able to enumerate many more AD usernames. This is most likely due to the fact that the sample size I was working with was much larger. I suspect that the possiblity to enumerate AD group names and cancel jobs running on the back-end may be dependent on the configuration of a specific instance of Access Manager that is running.
 
@@ -39,6 +39,7 @@ While automating the requests with the Burpsuite intruder tool, I discoved a mul
  * Enumeration of back-end server jobs running with the possibility to alter or interact with their states/status
    * Sychronization jobs
    * Backup jobs
+   * Rebuild jobs
    
    
 ### Potential Opportunites To Leverage From The Perspective Of An Attacker
