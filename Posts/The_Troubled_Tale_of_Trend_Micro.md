@@ -21,18 +21,34 @@ I wanted to put Trend Micro's Apex One solution to the test. For the sake of tes
 * A random reverse [PowerShell one-liner](https://gist.github.com/egre55/c058744a4240af6515eb32b2d33fbed3)
 * SilentTrinity
 
+
+## PowerShell Empire
+![PSE](Post Images/bypass_may8th_2019.jpg)
+![PSE_June](Post Images/amsi_github_oneliner.PNG)
+
+# MSFVenom cmd/windows/reverse_powershell
+![MSFvenom_Kai](Post Images/msfv_rpsh_kali.jpg)
+![MSFvenom_Win](Post Images/msfv_rpsh_win.jpg)
+
 I noticed an anomoly during testing when using the MSFvenom payload cmd/windows/reverse_powershell in conjuntion with the Magic Unicorn payload generator from TrustedSec. Apex One was catching this for some reason despite being obfuscated via base64 encoding. My basic knowledge of how AV and EDR technologies work leads me to believe that the engine is building a risk rating based on several factors or attributes associated with the PowerShell code. Since the PowerShell code is obfuscated via base64 encoding, it uses this information as one factor along with several other factors to determine whether or not is is harmful. In this case it correctly identified that the payload generated from the Magic Unicorn payload generator is indeed malicious. The opposite occurs when planting the base64 encoded PowerShell payload generated from the launcher command in Empire PowerShell. I'm not so sure why it's catching one and not the other despite both payloads being encoded. Most of the other MSFVenom payloads that I've tested up to this point (windows/shell/reverse_tcp) and outputted in the formats `psh-cmd`, `hta-psh` is stopped by Apex One.
 
-Before you ask, yes I did checking the settings in the administration console. I double checked, triple checked, checked again and then had a short existential crisis episode. Other collegaues and individuals from Trend have checked the settings. I'm sure they would have told me to shove off and check again by now if it was something on my end. After countless emails back and forth, a couple of phone calls later and a handful of updates pushed out, the problem still persists. I first notified Trend of the issue back in Feburary and it is now June. I should point out that we were at a point in the process in which we were able to get Apex One to succesfully block anything from PowerShell Empire. However, this glimer of hope only lasted for a short period of time. I tried throwing some stuff at Apex One a couple of days later with PowerShell Empire to test for consistency and of course it was once again letting the launcher payload through.
+Before you ask, yes I did checking the settings in the administration console. I double checked, triple checked, checked again and then had a short existential crisis episode. Other collegaues and individuals from Trend have checked the settings. I'm sure they would have told me to shove off and check again by now if it was something on my end. 
+
+![bms](Post Images/BMS.PNG)
+![scs](Post Images/SCS.PNG)
+
+After countless emails back and forth, a couple of phone calls later and a handful of updates pushed out, the problem still persists. I first notified Trend of the issue back in Feburary and it is now June. I should point out that we were at a point in the process in which we were able to get Apex One to succesfully block anything from PowerShell Empire. However, this glimer of hope only lasted for a short period of time. I tried throwing some stuff at Apex One a couple of days later with PowerShell Empire to test for consistency and of course it was once again letting the launcher payload through.
 
 # A Shockng Revelation
-During testing, I needed to metrics from other AV and EDR solutions to compare with and against Apex One. Why not start with Windows Defender in the latest Windows 10 Pro build? I created an ISO build 1809 (and later 1903 after testing a trial version of CrowdStrike Falcon Prevent), installed the latest updates for the operating system and definitions for Defender. The results shocked me to say the least. You'd think a free, built-in AV that comes with Windows would be absolute crap, but it's quite the opposite. From my testing, Windows Defender and ASMI in build 1809 was able to block everything Apex One wasn't. It even blocked the aforementioned PowerShell oneliner from the github link. However, I was able get around it using my custom reverse PowerShell script (this was expected) and using silenttrinity. Defender and ASMI did even better in build 1903 as it stone-walled everything except my custom reverse PowerShell script. I should state that more testing will need to be done with silenttrinity as I didn't recived a message from AMSI or Defender saying something malicous was going on. However, I recieved an error message telling me that the PowerShell stager with the embedded interpreter for the Boo lang payload and the MSBuild.xml stager failed to build correctly. This could be due to changes in the Windows operating system itself in build 1903 or changes in PowerShell and the .NET framework. To make sure I wasn't go insane and to rule out the environment as being the culprit of the issues with Apex One, I decided to unload and remove the Apex agent from a production workstation that wasn't important, let Defender take over and peform the same tests. Again, Defender stopped what Apex One couldn't.
+During testing, I needed to gather metrics from other AV and EDR solutions to compare against Apex One. Why not start with Windows Defender in the latest Windows 10 Pro build? I created an ISO build 1809 (and later 1903 after testing a trial version of CrowdStrike Falcon Prevent), installed the latest updates for the operating system and definitions for Defender. 
+
+![winver](Post Images/winver.PNG)
+
+The results shocked me to say the least. You'd think a free, built-in AV that comes with Windows would be absolute crap, but it's quite the opposite. From my testing, Windows Defender and ASMI in build 1809 was able to block everything Apex One wasn't. It even blocked the aforementioned PowerShell oneliner from the github link. 
+
+![Github One-liner](Post%20Images/amsi_github_oneliner.PNG)
+
+However, I was able get around it using my custom reverse PowerShell script (this was expected) and using silenttrinity. Defender and ASMI did even better in build 1903 as it stone-walled everything except my custom reverse PowerShell script. I should state that more testing will need to be done with silenttrinity as I didn't recived a message from AMSI or Defender saying something malicous was going on. However, I recieved an error message telling me that the PowerShell stager with the embedded interpreter for the Boo lang payload and the MSBuild.xml stager failed to build correctly. This could be due to changes in the Windows operating system itself in build 1903 or changes in PowerShell and the .NET framework. To make sure I wasn't go insane and to rule out the environment as being the culprit of the issues with Apex One, I decided to unload and remove the Apex agent from a production workstation that wasn't important, let Defender take over and peform the same tests. Again, Defender stopped what Apex One couldn't.
 
 # Conclusion
-You defitnely know you have a problem when an AV included in almost every single version of Windows 10 does much better job than the other solution that has had research and development with fancy (or gimmicky) features like machine learing, poured into it and people have to pay for it. Again, there's no perfect AV and EDR or all-in-one solution that will catch ever single thing including bleeding edge tactics and manuvers. However, if you're going to make people and orginization pay for your product then it better be able to react to the most basic malicious payloads and exploitation frameworks. Especially, if they've been publicy available for a while and allow you to tear the source code apart to figure out how it works.
-
-
-# Proof.txt
-
-
-
+You defitnely know you have a problem when an AV included in almost every single version of Windows 10 does much better job than the other solution that has had research and development with fancy (or gimmicky) features like machine learing, poured into it. Again, there's no perfect AV and EDR or all-in-one solution that will catch ever single thing including bleeding edge tactics and manuvers. However, if you're going to make people and orginization pay for your product then it better be able to react to the most basic malicious payloads and exploitation frameworks. Especially, if they've been publicy available for a while and allow you to tear the source code apart to figure out how it works.
