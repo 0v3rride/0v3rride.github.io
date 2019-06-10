@@ -24,7 +24,7 @@ I wanted to put Trend Micro's Apex One solution to the test. For the sake of tes
 
 ## PowerShell Empire
 ![PSE](Post%20Images/bypass_may8th_2019.jpg)
-![PSE_June](Post%20Images/amsi_github_oneliner.PNG)
+![PSE_June](Post%20Images/ao_pse.jpg)
 
 # MSFVenom cmd/windows/reverse_powershell
 ![MSFvenom_Kai](Post%20Images/msfv_rpsh_kali.jpg)
