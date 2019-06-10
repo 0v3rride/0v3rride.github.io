@@ -37,7 +37,7 @@ Before you ask, yes I did checking the settings in the administration console. I
 ![bms](Post%20Images/BMS.PNG)
 ![scs](Post%20Images/SCS.PNG)
 
-After countless emails back and forth, a couple of phone calls later and a handful of updates pushed out, the problem still persists. I first notified Trend of the issue back in Feburary and it is now June. I should point out that we were at a point in the process in which we were able to get Apex One to succesfully block anything from PowerShell Empire. However, this glimer of hope only lasted for a short period of time. I tried throwing some stuff at Apex One a couple of days later with PowerShell Empire to test for consistency and of course it was once again letting the launcher payload through.
+After countless emails back and forth, a couple of phone calls later and a handful of updates pushed out, the problem still persists. I first notified Trend of the issue back in Feburary and it is now June. I should point out that we were at a point in the process in which we were able to get Apex One to succesfully block anything from PowerShell Empire. However, this glimer of hope only lasted for a short period of time before I tried again a couple of days later to test for consistency.
 
 # A Shockng Revelation
 During testing, I needed to gather metrics from other AV and EDR solutions to compare against Apex One. Why not start with Windows Defender in the latest Windows 10 Pro build? I created an ISO build 1809 (and later 1903 after testing a trial version of CrowdStrike Falcon Prevent), installed the latest updates for the operating system and definitions for Defender. 
