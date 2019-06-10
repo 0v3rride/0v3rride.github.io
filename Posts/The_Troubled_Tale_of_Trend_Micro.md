@@ -23,26 +23,26 @@ I wanted to put Trend Micro's Apex One solution to the test. For the sake of tes
 
 
 ## PowerShell Empire
-![PSE](Post Images/bypass_may8th_2019.jpg)
-![PSE_June](Post Images/amsi_github_oneliner.PNG)
+![PSE](Post%20Images/bypass_may8th_2019.jpg)
+![PSE_June](Post%20Images/amsi_github_oneliner.PNG)
 
 # MSFVenom cmd/windows/reverse_powershell
-![MSFvenom_Kai](Post Images/msfv_rpsh_kali.jpg)
-![MSFvenom_Win](Post Images/msfv_rpsh_win.jpg)
+![MSFvenom_Kai](Post%20Images/msfv_rpsh_kali.jpg)
+![MSFvenom_Win](Post%20Images/msfv_rpsh_win.jpg)
 
 I noticed an anomoly during testing when using the MSFvenom payload cmd/windows/reverse_powershell in conjuntion with the Magic Unicorn payload generator from TrustedSec. Apex One was catching this for some reason despite being obfuscated via base64 encoding. My basic knowledge of how AV and EDR technologies work leads me to believe that the engine is building a risk rating based on several factors or attributes associated with the PowerShell code. Since the PowerShell code is obfuscated via base64 encoding, it uses this information as one factor along with several other factors to determine whether or not is is harmful. In this case it correctly identified that the payload generated from the Magic Unicorn payload generator is indeed malicious. The opposite occurs when planting the base64 encoded PowerShell payload generated from the launcher command in Empire PowerShell. I'm not so sure why it's catching one and not the other despite both payloads being encoded. Most of the other MSFVenom payloads that I've tested up to this point (windows/shell/reverse_tcp) and outputted in the formats `psh-cmd`, `hta-psh` is stopped by Apex One.
 
 Before you ask, yes I did checking the settings in the administration console. I double checked, triple checked, checked again and then had a short existential crisis episode. Other collegaues and individuals from Trend have checked the settings. I'm sure they would have told me to shove off and check again by now if it was something on my end. 
 
-![bms](Post Images/BMS.PNG)
-![scs](Post Images/SCS.PNG)
+![bms](Post%20Images/BMS.PNG)
+![scs](Post%20Images/SCS.PNG)
 
 After countless emails back and forth, a couple of phone calls later and a handful of updates pushed out, the problem still persists. I first notified Trend of the issue back in Feburary and it is now June. I should point out that we were at a point in the process in which we were able to get Apex One to succesfully block anything from PowerShell Empire. However, this glimer of hope only lasted for a short period of time. I tried throwing some stuff at Apex One a couple of days later with PowerShell Empire to test for consistency and of course it was once again letting the launcher payload through.
 
 # A Shockng Revelation
 During testing, I needed to gather metrics from other AV and EDR solutions to compare against Apex One. Why not start with Windows Defender in the latest Windows 10 Pro build? I created an ISO build 1809 (and later 1903 after testing a trial version of CrowdStrike Falcon Prevent), installed the latest updates for the operating system and definitions for Defender. 
 
-![winver](Post Images/winver.PNG)
+![winver](Post%20Images/winver.PNG)
 
 The results shocked me to say the least. You'd think a free, built-in AV that comes with Windows would be absolute crap, but it's quite the opposite. From my testing, Windows Defender and ASMI in build 1809 was able to block everything Apex One wasn't. It even blocked the aforementioned PowerShell oneliner from the github link. 
 
