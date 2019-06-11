@@ -38,18 +38,28 @@ I wanted to put Trend Micro's Apex One solution to the test. For the sake of tes
 ![msfv_6](Post%20Images/msfv_bypass2_LI.jpg)
 
 # Observations
-As I mentioned previously, I worked with Trend to get a patch pushed out to specifically alarm on PowerShell Empire (they're still working on the MSFvenom payload). I recieved the patch on the specified date and it seemed like it was working. PSE was no longer receiving a callback from the target thus producing an agent that would allow me to interact with the remote host. Every thing was fine and dandy until I peformed the same test a couple of days later. Apex One had once again failed to alert on the C2 connection. At this time I noticed that the IP on my Kali box had changed. Was I able to bypass Apex One once more with PSE just by changing my IP? Yes, I was. To make sure I wasn't hallucinating, I had a collegue execute stager on their machine and sure enough I got a callback from the machine.
+As I mentioned previously, I worked with Trend to get a patch pushed out to specifically alarm on PowerShell Empire (they're still working on the MSFvenom payload). I recieved the patch on a specified date and it seemed like it was working. PSE was no longer receiving a callback from the target thus producing an agent that would allow me to interact with the remote host. Every thing was fine and dandy until I peformed the same test a couple of days later. Apex One had once again failed to alert on the C2 connection. At this time I noticed that the IP on my Kali box had changed. Was I able to bypass Apex One once more with PSE just by changing my IP? Yes, I was. To make sure I wasn't hallucinating, I had a collegue execute the stager on their machine and sure enough I got a callback from the machine.
 
 ## PowerShell Empire
-
-
 
 I noticed an anomoly during testing when using the MSFvenom payload cmd/windows/reverse_powershell in conjuntion with the Magic Unicorn payload generator from TrustedSec. Apex One was catching this for some reason despite being obfuscated via base64 encoding. My basic knowledge of how AV and EDR technologies work leads me to believe that the engine is building a risk rating based on several factors or attributes associated with the PowerShell code. Since the PowerShell code is obfuscated via base64 encoding, it uses this information as one factor along with several other factors to determine whether or not is is harmful. In this case it correctly identified that the payload generated from the Magic Unicorn payload generator is indeed malicious. The opposite occurs when planting the base64 encoded PowerShell payload generated from the launcher command in Empire PowerShell. I'm not so sure why it's catching one and not the other despite both payloads being encoded. Most of the other MSFVenom payloads that I've tested up to this point (windows/shell/reverse_tcp) and outputted in the formats `psh-cmd`, `hta-psh` is stopped by Apex One.
 
 
 ## PowerShell Empire
-![PSE](Post%20Images/bypass_may8th_2019.jpg)
-![PSE_June](Post%20Images/ao_pse.jpg)
+
+#### Round 1
+![PSE_1_1](Post%20Images/kalivm.PNG)
+![PSE_1_4](Post%20Images/win10prod_LI.jpg!)
+![PSE_1_2](Post%20Images/listener_stager.PNG)
+![PSE_1_3](Post%20Images/pse_bypass_LI.jpg)
+
+A few minutes later and Apex One still didn't figure out was happening.
+
+#### Round 2
+![PSE_2_1](Post%20Images/win10prod2_LI.jpg)
+![PSE_2_2](Post%20Images/listener_stager2.PNG)
+![PSE_2_3](Post%20Images/pse_bypass2.PNG)
+![PSE_2_4](Post%20Images/pse_bypass2_cmds_LI.jpg)
 
 # A Shockng Revelation
 During testing, I needed to gather metrics from other AV and EDR solutions to compare against Apex One. Why not start with Windows Defender in the latest Windows 10 Pro build? I created an ISO build 1809 (and later 1903 after testing a trial version of CrowdStrike Falcon Prevent), installed the latest updates for the operating system and definitions for Defender. 
