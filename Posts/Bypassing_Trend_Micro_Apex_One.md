@@ -4,12 +4,10 @@
 ___________________________________
 
 # Background
-Imagine, if you will, that your organization utilizes a well known and 'trusted' Enterprise grade endpoint detection and response solution. Furthermore, imagine that you discover a way to bypass this solution, but to your horror, a couple of glaring issues come to the forefront: 
-1. The EDR solution can be bypassed using simple or even very basic payloads. 
-2. The EDR solution can be bypassed using exploit tools or frameworks that have aged well beyond the point where many would logically think that most vendors would have a solution to detect their signatures, etc.
-3. A solution, update, signature, whatever still hasn't been deployed to clients despite working months on end with back-end engineers and other team members part of the vendor and providing beyond adequate information to help them.
+1. Apex One can be bypassed using simple or even very basic payloads that mostly reside in memory. 
+2. Apex One can be bypassed using exploit tools or frameworks that have aged well beyond the point where many would logically think that most vendors would have a solution to detect their signatures, etc.
 
-Obviously, a product like this isn't going to prevent bleeding-edge methods or techniques that are used to get around them. The same goes for customized payloads. Heck, the simple reverse PowerShell script I wrote back in March surprisingly still gets around Defender and AMSI in Windows 10 build 1903. What I'm trying to get at, is that the art of bypassing anti-virus and EDR solutions is a whole other topic on its own that consists of individuals who know a much more than I do when it comes to this type of stuff. 
+Obviously, a product like this isn't going to prevent bleeding-edge methods or techniques that are used to get around them. The same goes for customized payloads. For example, the simple reverse PowerShell script I wrote gets around Defender and AMSI in Windows 10 build 1903 as of June 7th. The art of bypassing anti-virus and EDR solutions is a whole other topic on its own that consists of individuals who know much more than I do when it comes to this type of stuff. 
 
 Before you ask, yes I did check the settings in the administration console. I double checked, triple checked, checked a fourth time, checked again and then had a small existential crisis. Other colleagues and individuals from Trend have checked the settings. I'm sure they would have told me to shove off by now and check again if it was something on my end. 
 
@@ -30,7 +28,7 @@ I wanted to put Trend Micro's Apex One solution to the test. For the sake of tes
 
 
 # MSFVenom cmd/windows/reverse_powershell
-![msfv_1](Post%20Images/kaliVM.PNG)
+![msfv_1](Post%20Images/KaliVM.PNG)
 ![msfv_2](Post%20Images/Win10Prod_LI.jpg)
 ![msfv_3](Post%20Images/msfvenom_payload.PNG)
 ![msfv_4](Post%20Images/Win10Prod_rpsh_exec.PNG)
