@@ -42,14 +42,9 @@ As I mentioned previously, I worked with Trend to get a patch pushed out to spec
 
 ## PowerShell Empire
 
-I noticed an anomoly during testing when using the MSFvenom payload cmd/windows/reverse_powershell in conjuntion with the Magic Unicorn payload generator from TrustedSec. Apex One was catching this for some reason despite being obfuscated via base64 encoding. My basic knowledge of how AV and EDR technologies work leads me to believe that the engine is building a risk rating based on several factors or attributes associated with the PowerShell code. Since the PowerShell code is obfuscated via base64 encoding, it uses this information as one factor along with several other factors to determine whether or not is is harmful. In this case it correctly identified that the payload generated from the Magic Unicorn payload generator is indeed malicious. The opposite occurs when planting the base64 encoded PowerShell payload generated from the launcher command in Empire PowerShell. I'm not so sure why it's catching one and not the other despite both payloads being encoded. Most of the other MSFVenom payloads that I've tested up to this point (windows/shell/reverse_tcp) and outputted in the formats `psh-cmd`, `hta-psh` is stopped by Apex One.
-
-
-## PowerShell Empire
-
 #### Round 1
 ![PSE_1_1](Post%20Images/kalivm.PNG)
-![PSE_1_4](Post%20Images/win10prod_LI.jpg!)
+![PSE_1_4](Post%20Images/win10prod_LI.jpg)
 ![PSE_1_2](Post%20Images/listener_stager.PNG)
 ![PSE_1_3](Post%20Images/pse_bypass_LI.jpg)
 
@@ -61,6 +56,8 @@ A few minutes later and Apex One still didn't figure out was happening.
 ![PSE_2_3](Post%20Images/pse_bypass2.PNG)
 ![PSE_2_4](Post%20Images/pse_bypass2_cmds_LI.jpg)
 
+I came across an anomoly during testing when using the MSFvenom payload cmd/windows/reverse_powershell in conjuntion with the Magic Unicorn payload generator from TrustedSec. Apex One was catching this for some reason despite being obfuscated via base64 encoding. My basic knowledge of how AV and EDR technologies work leads me to believe that the engine is building a risk rating based on several factors or attributes associated with the PowerShell code. Since the PowerShell code is obfuscated via base64 encoding, it uses this information as one factor along with several other factors to determine whether or not it is harmful or suspicious. In this case it correctly identified that the payload generated from the Magic Unicorn payload generator is indeed malicious. The opposite seems to occur when planting the base64 encoded PowerShell payload generated from the launcher command in Empire PowerShell. I'm not so sure why it's catching one and not the other despite both payloads being encoded. Most of the other MSFVenom payloads that I've tested up to this point (windows/shell/reverse_tcp) and outputted in the formats `psh-cmd`, `hta-psh` is detected by Apex One.
+
 # A Shockng Revelation
 During testing, I needed to gather metrics from other AV and EDR solutions to compare against Apex One. Why not start with Windows Defender in the latest Windows 10 Pro build? I created an ISO build 1809 (and later 1903 after testing a trial version of CrowdStrike Falcon Prevent), installed the latest updates for the operating system and definitions for Defender. 
 
@@ -71,6 +68,3 @@ The results shocked me to say the least. You'd think a free, built-in AV that co
 ![Github One-liner](Post%20Images/amsi_github_oneliner.PNG)
 
 However, I was able get around it using my custom reverse PowerShell script (this was expected) and silenttrinity. Defender and ASMI did even better in build 1903 as it stone-walled everything except my custom reverse PowerShell script. I should state that more testing will need to be done with silenttrinity as I didn't recived a message from AMSI or Defender saying something malicous was going on. However, I recieved an error message telling me that the PowerShell stager with the embedded interpreter for the Boo lang payload and the MSBuild.xml stager failed to build correctly. This could be due to changes in the Windows operating system itself in build 1903 or changes in PowerShell and the .NET framework. To make sure I wasn't go insane and to rule out the environment as being the culprit of the issues with Apex One, I decided to unload and remove the Apex agent from a production workstation that wasn't important, let Defender take over and peform the same tests. Again, Defender stopped what Apex One couldn't.
-
-# Conclusion
-You defitnely know you have a problem when an AV included in almost every single version of Windows 10 does much better job than the other solution that has had research and development with fancy (or gimmicky) features like machine learing, poured into it. Again, there's no perfect AV and EDR or all-in-one solution that will catch ever single thing including bleeding edge tactics and manuvers. However, if you're going to make people and orginization pay for your product then it better be able to react to the most basic malicious payloads and exploitation frameworks. Especially, if they've been publicy available for a while and allow you to tear the source code apart to figure out how it works.
