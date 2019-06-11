@@ -60,7 +60,7 @@ During testing, I needed to gather metrics from other AV and EDR solutions to co
 
 ![winver](Post%20Images/winver.PNG)
 
-The results shocked me, to say the least. You'd think a free, built-in AV that comes with Windows would be absolute crap, but it's quite the opposite. From my testing, Windows Defender and ASMI in build 1809 were able to block everything Apex One wasn't. It even blocked the aforementioned PowerShell oneliner from the GitHub link. 
+The results shocked me, to say the least. You'd think a free, built-in AV that comes with Windows would be absolute trash, but it's quite the opposite. From my testing, Windows Defender and ASMI in build 1809 were able to block everything Apex One wasn't. It even blocked the aforementioned PowerShell oneliner from the GitHub link. 
 
 ![Github One-liner](Post%20Images/amsi_github_oneliner.PNG)
 
