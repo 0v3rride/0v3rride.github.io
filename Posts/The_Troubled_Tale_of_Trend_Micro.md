@@ -44,17 +44,16 @@ As I mentioned previously, I worked with Trend to get a patch pushed out to spec
 
 #### Round 1
 ![PSE_1_1](Post%20Images/kalivm.PNG)
-![PSE_1_4](Post%20Images/win10prod_LI.jpg)
-![PSE_1_2](Post%20Images/listener_stager.PNG)
-![PSE_1_3](Post%20Images/pse_bypass_LI.jpg)
+![PSE_1_2](Post%20Images/win10prod2_LI.jpg)
+![PSE_1_3](Post%20Images/listener_stager.PNG)
+![PSE_1_4](Post%20Images/pse_bypass_LI.jpg)
 
 A few minutes later and Apex One still didn't figure out was happening.
 
 #### Round 2
 ![PSE_2_1](Post%20Images/win10prod2_LI.jpg)
-![PSE_2_2](Post%20Images/listener_stager2.PNG)
-![PSE_2_3](Post%20Images/pse_bypass2.PNG)
-![PSE_2_4](Post%20Images/pse_bypass2_cmds_LI.jpg)
+![PSE_2_2](Post%20Images/pse_bypass2.PNG)
+![PSE_2_3](Post%20Images/pse_bypass2_cmds_LI.jpg)
 
 I came across an anomoly during testing when using the MSFvenom payload cmd/windows/reverse_powershell in conjuntion with the Magic Unicorn payload generator from TrustedSec. Apex One was catching this for some reason despite being obfuscated via base64 encoding. My basic knowledge of how AV and EDR technologies work leads me to believe that the engine is building a risk rating based on several factors or attributes associated with the PowerShell code. Since the PowerShell code is obfuscated via base64 encoding, it uses this information as one factor along with several other factors to determine whether or not it is harmful or suspicious. In this case it correctly identified that the payload generated from the Magic Unicorn payload generator is indeed malicious. The opposite seems to occur when planting the base64 encoded PowerShell payload generated from the launcher command in Empire PowerShell. I'm not so sure why it's catching one and not the other despite both payloads being encoded. Most of the other MSFVenom payloads that I've tested up to this point (windows/shell/reverse_tcp) and outputted in the formats `psh-cmd`, `hta-psh` is detected by Apex One.
 
