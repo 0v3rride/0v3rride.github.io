@@ -11,7 +11,7 @@ Imagine, if you will, that your organization utilizes a well known and 'trusted'
 
 Obviously, a product like this isn't going to prevent bleeding-edge methods or techniques that are used to get around them. The same goes for customized payloads. Heck, the simple reverse PowerShell script I wrote back in March surprisingly still gets around Defender and AMSI in Windows 10 build 1903. What I'm trying to get at, is that the art of bypassing anti-virus and EDR solutions is a whole other topic on its own that consists of individuals who know a much more than I do when it comes to this type of stuff. 
 
-Before you ask, yes I did checking the settings in the administration console. I double checked, triple checked, checked a fourth time, checked again and then had a small existential crisis. Other colleagues and individuals from Trend have checked the settings. I'm sure they would have told me to shove off by now and check again if it was something on my end. 
+Before you ask, yes I did check the settings in the administration console. I double checked, triple checked, checked a fourth time, checked again and then had a small existential crisis. Other colleagues and individuals from Trend have checked the settings. I'm sure they would have told me to shove off by now and check again if it was something on my end. 
 
 ![bms](Post%20Images/BMS.PNG)
 ![scs](Post%20Images/SCS.PNG)
