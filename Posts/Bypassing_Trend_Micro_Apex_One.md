@@ -4,14 +4,11 @@
 
 ## Background
 
-1. Currently, Apex One can be bypassed using simple or even very basic payloads that mostly reside in memory. 
-2. Currently, Apex One can be bypassed using exploit tools or frameworks that have aged well beyond the point where many would logically think that most vendors would have a solution to detect their signatures, etc.
-
 Here's the [solution brief](www.trendmicro.com/en_us/business/products/user-protection/sps/endpoint.html?modal=overview-apex-f2049a) about Apex One.
 
-Obviously, a product like this isn't going to prevent bleeding-edge methods or techniques that are used to get around them. The same goes for customized payloads. For example, the simple reverse PowerShell script I wrote gets around Defender and AMSI in Windows 10 build 1903 as of June 7th. The art of bypassing anti-virus and EDR solutions is a whole other topic on its own that consists of individuals who know much more than I do when it comes to this type of stuff. 
+Obviously, a product like this isn't going to prevent bleeding-edge methods or techniques that are used to get around them. The same goes for customized payloads. For example, the simple reverse PowerShell script I wrote gets around Defender and AMSI in Windows 10 build 1903 as of June 7th. The art of bypassing anti-virus and EDR solutions is a whole other topic on its own that consists of individuals who know much more than I do when it comes to this type of stuff.
 
-Before you ask, yes I did check the settings in the administration console. I double checked, triple checked, checked a fourth time, and then checked again for the hell of it. Other colleagues and individuals from Trend have checked the settings. I'm sure they would have told me to shove off by now and check again if it was something on my end. 
+Before you ask, yes I did check the settings in the administration console. I double checked, triple checked, checked a fourth time, and then checked again for the hell of it. Other colleagues and individuals from Trend have checked the settings. I'm sure they would have told me to shove off by now and check again if it was something on my end.
 
 ![bms](Post%20Images/TMAO-Bypass-imgs/misc-imgs/BMS.PNG)
 ![scs](Post%20Images/TMAO-Bypass-imgs/misc-imgs/SCS.PNG)
@@ -31,12 +28,12 @@ I wanted to test Apex One to see if it works as advertised, rather than setting 
 
 ## MSFVenom cmd/windows/reverse_powershell
 
-![msfv_1](Post%20Images/TMAO-Bypass-imgs/MSFvenom-imgs/kalivm_msfv.PNG)
-![msfv_2](Post%20Images/TMAO-Bypass-imgs/misc-imgs/win10prod1_LI.jpg)
+![msfv_1](Post%20Images/TMAO-Bypass-imgs/MSFvenom-imgs/msfv_kalivm.PNG)
+![msfv_2](Post%20Images/TMAO-Bypass-imgs/MSFvenom-imgs/Win10Prod.PNG)
 ![msfv_3](Post%20Images/TMAO-Bypass-imgs/MSFvenom-imgs/msfvenom_payload.PNG)
-![msfv_4](Post%20Images/TMAO-Bypass-imgs/misc-imgs/Win10Prod_rpsh_exec.PNG)
-![msfv_5](Post%20Images/TMAO-Bypass-imgs/MSFvenom-imgs/msfv_bypass_LI.jpg)
-![msfv_6](Post%20Images/TMAO-Bypass-imgs/MSFvenom-imgs/msfv_bypass2_LI.jpg)
+![msfv_4](Post%20Images/TMAO-Bypass-imgs/MSFvenom-imgs/Win10Prod_rpsh_exec.PNG)
+![msfv_5](Post%20Images/TMAO-Bypass-imgs/MSFvenom-imgs/msfv_bypass.PNG)
+![msfv_6](Post%20Images/TMAO-Bypass-imgs/MSFvenom-imgs/msfv_bypass2.PNG)
 
 ## Observations & Anomalies
 
@@ -50,25 +47,32 @@ The third and final anomaly that has been the most consistent in getting me arou
 
 #### Default payload generation
 
-![PSE_default_bypass](Post%20Images/TMAO-Bypass-imgs/Empire-imgs/Inkeddefault_LI.jpg)
-![PSE_default_privesc](Post%20Images/TMAO-Bypass-imgs/Empire-imgs/Inkeddefault_privesc_LI.jpg)
+![PSE_default_bypass](Post%20Images/TMAO-Bypass-imgs/Empire-imgs/default2.PNG)
+![PSE_default_privesc](Post%20Images/TMAO-Bypass-imgs/Empire-imgs/privesc_success2.PNG)
 
 #### Payload tweak & modification
 
-![PSE_mod](Post%20Images/TMAO-Bypass-imgs/Empire-imgs/Inkedmod_LI.jpg)
+Note the following: `powershell -executionpolicy unrestricted -nologo -noexit -noninteractive -encoded`
+
+![PSE_mod](Post%20Images/TMAO-Bypass-imgs/Empire-imgs/pse_tweak.PNG)
 
 
 ## A Shocking Revelation
 
-During testing, I needed to gather metrics from other AV and EDR solutions to compare against Apex One. Why not start with Windows Defender in the latest Windows 10 Pro build? I created an ISO build 1809 (and later 1903 after testing a trial version of CrowdStrike Falcon Prevent), installed the latest updates for the operating system and definitions for Defender. The results shocked me, to say the least. You'd think a free, built-in AV that comes with Windows would be absolute trash, but it's quite the opposite. From my testing, Windows Defender and ASMI in build 1809 were able to block everything Apex One wasn't. It even blocked the aforementioned PowerShell oneliner from the GitHub link. 
+During testing, I needed to gather metrics from other AV and EDR solutions to compare against Apex One. Why not start with Windows Defender in the latest Windows 10 Pro build? I created an ISO build 1803 (and later 1903 after testing a trial version of CrowdStrike Falcon Prevent), installed the latest updates for the operating system and definitions for Defender. The results shocked me, to say the least. You'd think a free, built-in AV that comes with Windows would be absolute trash, but it's quite the opposite. From my testing, Windows Defender and ASMI in build 1803 were able to block almost everything Apex One wasn't. It even blocked the aforementioned PowerShell oneliner from the GitHub link.
 
 ![Github One-liner](Post%20Images/TMAO-Bypass-imgs/misc-imgs/amsi_github_oneliner.PNG)
 
-However, I was able to get around it using my custom reverse PowerShell script (this was expected) and silenttrinity. Defender and ASMI did even better in build 1903 as it stone-walled everything except my custom reverse PowerShell script. I should state that more testing will need to be done with silenttrinity as I didn't receive a message from AMSI or Defender saying something malicious was going on. However, I did received an error message telling me that the PowerShell stager with the embedded interpreter for the Boo lang payload and the MSBuild.xml stager failed to build correctly. This could be due to changes in the Windows operating system itself in build 1903 or changes in PowerShell and the .NET framework. Furthermore, to rule out the environment as being the culprit of the issues with Apex One, I decided to unload and remove the Apex agent from a production workstation that wasn't important, let Defender take over and perform the same tests. Again, Defender stopped what Apex One couldn't.
+However, I was able to get around it using my custom reverse PowerShell script (this was expected) and silenttrinity. Defender and ASMI did even better in build 1903 as it stone-walled everything except my custom reverse PowerShell script. I should state that more testing will need to be done with silenttrinity as I didn't receive a message from AMSI or Defender saying something malicious was going on. However, I did receive an error message telling me that the PowerShell stager with the embedded interpreter for the Boo Lang or Iron Python based payload and the MSBuild.xml stagers failed to build correctly. This could be due to changes in the Windows operating system itself in build 1903 or changes in PowerShell and the .NET framework. Furthermore, to rule out the environment as being the culprit of the issues with Apex One, I decided to unload and remove the Apex agent from a production workstation that wasn't important, let Defender take over and perform the same tests. Again, Defender stopped what Apex One couldn't.
 
-## (06-14-19)
+# Updates
+
+## Update #1: June 21st 2019
+
+1. Currently, Apex One can be bypassed using simple or even very basic payloads that mostly reside in memory.
+2. Currently, Apex One can be bypassed using exploit tools or frameworks that have aged well beyond the point where many would logically think that most vendors would have a solution to detect their signatures, etc.
 
 * The majority of the payloads that I've created or generated and that have touched the disk were detected as they should be.
-* By mere observation, it looks like Trend is having trouble detecting malicious code that runs in memory and in some way interacts with the .NET framework via PowerShell, C#, etc.
+* By mere observation, it looks like Trend is having trouble detecting malicious code that runs in memory and in some way interacts with the .NET framework via a .NET language, etc.
 * Furthermore, the current factors or attribute flags used to help the engine determine whether or not this code is malicious are simply not sufficient enough in **my opinion**.
-* Microsoft's Windows Defender via the latest Windows 10 build is a much better solution at this time.
+* Microsoft's Windows Defender via the latest Windows 10 build (1903) does a suprisingly better job.
