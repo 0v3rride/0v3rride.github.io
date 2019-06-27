@@ -75,8 +75,7 @@ However, I was able to get around it using my custom reverse PowerShell script (
 * The majority of the payloads that I've created or generated and that have touched the disk were detected as they should be.
 * By mere observation, it looks like Trend is having trouble detecting malicious code that runs in memory and in some way interacts with the .NET framework via a .NET language, etc.
 * Furthermore, the current factors or attribute flags used to help the engine determine whether or not this code is malicious are simply not sufficient enough in **my opinion**.
-* Microsoft's Windows Defender via the latest Windows 10 build (1903) does a suprisingly better job.
 
 ## Update #2: June 26th 2019
 
-Apex One seems to be consistently alerting on PowerShell Empire payloads in which I don't change or modify the default launcher value when setting up a listener. However, upon speaking with the team at Trend Micro, they informed me that they would have to open another ticket. I guess that means the simple technique I was using by changing the flags used with the PowerShell command is a separate and completely new issue. So, I basically found a way to bypass the update that was pushed out on May 8th before the day was over with. campfire
+Apex One seems to be consistently alerting on PowerShell Empire payloads in which I don't change or modify the default launcher value when setting up a listener. However, upon speaking with the team at Trend Micro, they informed me that they would have to open another ticket. I guess that means the simple technique I've been using by changing the flags used with the PowerShell command is a separate and completely new issue. So, I basically found a way to bypass the update that was pushed out on May 8th before the day was even over with. 😁
