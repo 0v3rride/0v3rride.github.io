@@ -8,7 +8,7 @@
 
 ## Caveats
 
-The targeted remote host needs to have some version of Microsoft Visual Stuido or the [.NET SDK](https://dotnet.microsoft.com/learn/dotnet/hello-world-tutorial/install) installed or present on the machine. It is possible that the `dotnet` binary could be included with other products and software, but I'm not aware of any others at this time.
+The targeted remote host needs to have some version of Microsoft Visual Stuido or the [.NET SDK](https://dotnet.microsoft.com/learn/dotnet/hello-world-tutorial/install) installed or present on the machine. It is possible that the executable binary could be included with other products and software, but I'm not aware of any others at this time.
 
 One easy way to tell if it's installed is issuing the command `where dotnet`. The executable should have the following file path `C:\Program Files\dotnet\dotnet.exe`.
 
