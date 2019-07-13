@@ -4,7 +4,6 @@
 _____________________________________________________________________
 
 ![e4lpy](Post%20Images/e4lpy-imgs/e4lpy.PNG)
-![bms](Post%20Images/TMAO-Bypass-imgs/misc-imgs/BMS.PNG)
 
 Enum4Linux is one of my favorite tools for enumerating a remote host via SMB and RPC. Some other great tools for SMB enumeration are:
 
