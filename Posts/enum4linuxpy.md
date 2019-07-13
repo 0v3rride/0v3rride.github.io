@@ -3,7 +3,7 @@
 # Enum4LinuxPy
 _____________________________________________________________________
 
-![e4lpy](Post%20Images/e4lpy-imgs/e4lpy.png)
+![e4lpy](Posts/Post%Images/e4lpy-imgs/e4lpy.PNG)
 
 Enum4Linux is one of my favorite tools for enumerating a remote host via SMB and RPC. Some other great tools for SMB enumeration are:
 
