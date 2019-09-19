@@ -31,7 +31,7 @@ There is at least one argument that helped me obtain code execution, which was t
 
 1. The `shell` parameter in both calls are set to `true`. That's a no no, especially if you allow a user to supply input to your script or program. In simple terms, this tells Python to execute the string containing the command(s) as if you were doing it in a bash shell.
 
-2. The `command` variable is a whole **string** variable that contains the entirety of a bash command, so everything is treated literally so to speak. Rather the string referenced by the `command` variable should have been broken down into a list of strings (`command = ["rpcclient", "-U", "\"{}\"".format(auth), "{}".format(ip) "-c", "\"lsaquery\""]`)
+2. The `command` variable is a **string** variable that contains the entirety of a bash command, so everything is treated literally so to speak. Rather the string referenced by the `command` variable should have been broken down into a list of strings (`command = ["rpcclient", "-U", "\"{}\"".format(auth), "{}".format(ip) "-c", "\"lsaquery\""]`)
 
 
 Here's the help documentation for ridenum.
