@@ -13,14 +13,14 @@ Reading source code from other individuals or groups can give you an insight int
   
 ## Some Of Python's Dangerous Functions & Methods
 Python is a fantastic language. It's one of my favorites along side PowerShell, and C#. However, like all computer languages it doesn't come without it's flaws or dangerous functions and methods. You can read more about some of those dangerous functions and methods in the below links:
- 1. https://www.kevinlondon.com/2015/07/26/dangerous-python-functions.html
- 2. https://www.kevinlondon.com/2015/08/15/dangerous-python-functions-pt2.html
- 3. https://security.openstack.org/guidelines/dg_use-subprocess-securely.html
- 4. https://security.openstack.org/guidelines/dg_avoid-shell-true.html
- 5. https://medium.com/python-pandemonium/a-trap-of-shell-true-in-the-subprocess-module-6db7fc66cdfd
- 6. https://docs.python.org/3.7/library/subprocess.html#popen-objects
+ 1. [Dangerous Python Functions Part 1](https://www.kevinlondon.com/2015/07/26/dangerous-python-functions.html)
+ 2. [Dangerous Python Functions Part 2](https://www.kevinlondon.com/2015/08/15/dangerous-python-functions-pt2.html)
+ 3. [OpenStack: Use Subprocess Securely](https://security.openstack.org/guidelines/dg_use-subprocess-securely.html)
+ 4. [OpenStack: Avoiding Shell Injection](https://security.openstack.org/guidelines/dg_avoid-shell-true.html)
+ 5. [A Medium Blog About Python Shell Injection](https://medium.com/python-pandemonium/a-trap-of-shell-true-in-the-subprocess-module-6db7fc66cdfd)
+ 6. [Official Python Documentation](https://docs.python.org/3.7/library/subprocess.html#popen-objects)
  
-The links above focus more on which a user is prompted to provide input via the `input` function in Python. Leveraging command injection via command line arguments that will be parsed by a script will be a little trickier, but it's still very simple to do.
+The links above focus more in which a user is prompted to provide input via the `input` function in Python. Leveraging command injection via command line arguments that will be parsed by a script will be a little trickier, but it's still very simple to do.
  
 ## The Vulnerability
 The vulnerability itself is not super-duper serious as a vast majority of Linux machines will probably not have this tool installed. While working on a CTF problem involving SIDs and looking for another tool to compare with Impacket's lookupsid.py script, I came across a tool written by Dave Kennedy (ReL1K) called RidEnum.py. I was interested in how both tools were obtaining the Domain SID, but that's not really important. However, I noticed in the source code on the [github page](https://github.com/trustedsec/ridenum/blob/master/ridenum.py) that the tool is using `Subprocess.Popen` objects to execute a shell command. These appear on the following lines:
