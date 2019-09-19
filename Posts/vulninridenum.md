@@ -65,7 +65,7 @@ Command/Shell injection via a Python script is really that simple. The fix to th
 Change `subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)` to `subprocess.Popen(["rpcclient", "-U", "\"{}\"".format(auth), "{}".format(ip), "-c", "\"lsaquery\""], stdout=subprocess.PIPE)`
 
 
-## You can play with the following source code below to get a better understanding.
+#### You can play with the following source code below to get a better understanding.
 
 ```
 import subprocess; 
