@@ -58,7 +58,7 @@ README.md
 ridenum.py
 ```
 
-Note how I placed the `nc` command with the `IP` argument. Why do I need two `;`? If I don't add another `;` to terminate, it looks like `ridenum.py` trys creating a list of users enumerated during RID cycling, which kills the reverse shell immediately. So placing the second `;` after the `nc` command will keep the reverse shell alive until you exit it.
+Note how I placed the `nc` command with the `IP` argument. Why do I need two `;`? If I don't add another `;` to terminate, it looks like `ridenum.py` tries creating a list of users enumerated during RID cycling, which kills the reverse shell immediately. So placing the second `;` after the `nc` command will keep the reverse shell alive until you exit it.
 
 Command/Shell injection via a Python script is really that simple. The fix to this is also pretty simple. Get rid of the `shell=True` or explicitly use `shell=False`. In addition breaking down the `command` variable down into a list of strings would fix the issue also as this wouldn't treat each subsquent string as an argument to the string in the first indice.
 
