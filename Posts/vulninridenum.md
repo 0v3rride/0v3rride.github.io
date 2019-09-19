@@ -23,7 +23,11 @@ Python is a fantastic language. It's one of my favorites along side PowerShell, 
 The links above focus more on which a user is prompted to provide input via the `input` function in Python. Leveraging command injection via command line arguments that will be parsed by a script will be a little trickier, but it's still very simple to do.
  
 ## The Vulnerability
-The vulnerability itself is not super-duper serious as a vast majority of Linux machines will probably not have this tool installed. While working on a CTF problem involving SIDs and looking for another tool to compare with Impacket's lookupsid.py script, I came across a tool written by Dave Kennedy (ReL1K) called RidEnum.py. I was interested in how both tools were obtaining the Domain SID, but that's not really important. However, I noticed in the source code on the [github page](https://github.com/trustedsec/ridenum/blob/master/ridenum.py) that the tool was using a Subprocess.Popen object or two to execute a shell command. This appears on lines 62 and 78. 
+The vulnerability itself is not super-duper serious as a vast majority of Linux machines will probably not have this tool installed. While working on a CTF problem involving SIDs and looking for another tool to compare with Impacket's lookupsid.py script, I came across a tool written by Dave Kennedy (ReL1K) called RidEnum.py. I was interested in how both tools were obtaining the Domain SID, but that's not really important. However, I noticed in the source code on the [github page](https://github.com/trustedsec/ridenum/blob/master/ridenum.py) that the tool is using `Subprocess.Popen` objects to execute a shell command. These appear on the following lines:
+ * 62
+ * 78
+ * 111
+ * 256
 
 There is at least one argument that helped me obtain code execution, which was the argument for the rhost's IP address. It also looks like the `auth` argument is a possibility, but I've had no luck with using it. If you look closely, you'll note that the variable `command` which will store the string representation of the command to be executed takes the `auth` (or optional username argument) and the IP argument and then places them into the string using the "old style" string formatting operator (`%`).
 
@@ -62,7 +66,7 @@ Note how I placed the `nc` command with the `IP` argument. Why do I need two `;`
 ## The Fix
 Command/Shell injection via a Python script is really that simple. The fix to this is also pretty simple. Get rid of the `shell=True` or explicitly use `shell=False`. In addition, breaking down the string in referenced by the`command` variable into a list of strings would fix the issue also as this wouldn't treat each subsquent string as an argument to the string in the first indice. 
 
-Change `subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)` to `subprocess.Popen(["rpcclient", "-U", "\"{}\"".format(auth), "{}".format(ip), "-c", "\"lsaquery\""], stdout=subprocess.PIPE)`
+For example changing `subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)` to `subprocess.Popen(["rpcclient", "-U", "\"{}\"".format(auth), "{}".format(ip), "-c", "\"lsaquery\""], stdout=subprocess.PIPE)` removes the chance for command injection.
 
 
 #### You can play with the following source code below to get a better understanding.
