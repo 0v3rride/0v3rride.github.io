@@ -62,7 +62,7 @@ Note how I placed the `nc` command with the `IP` argument. Why do I need two `;`
 ## The Fix
 Command/Shell injection via a Python script is really that simple. The fix to this is also pretty simple. Get rid of the `shell=True` or explicitly use `shell=False`. In addition, breaking down the string in referenced by the`command` variable into a list of strings would fix the issue also as this wouldn't treat each subsquent string as an argument to the string in the first indice. 
 
-Change `subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)` to `subprocess.Popen(["rpcclient", "-U", "\"{}\"".format(auth), "{}".format(ip), "-c", "\"lsaquery\""], stdout=subprocess.PIPE, shell=True)`
+Change `subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)` to `subprocess.Popen(["rpcclient", "-U", "\"{}\"".format(auth), "{}".format(ip), "-c", "\"lsaquery\""], stdout=subprocess.PIPE)`
 
 
 ## You can play with the following source code below to get a better understanding.
