@@ -1,6 +1,6 @@
 ![Linkedin](Post%20Images/linkedin.png) [Linkedin](https://www.linkedin.com/in/ryangore/) | ![Github](Post%20Images/github.png) [Github](https://github.com/0v3rride)
 
-# Finding A Command Injection Vuln In A Pentesting Tool
+# Python's Risky Subprocess Module & Pwning A Pentesting Tool
 _____________________________________________________________________
 
 For some reason looking at other people's source code makes me get all warm and fuzzy inside. Kinda of like the description a Millenial hipster gives you. You know, when they tell you how they sat down and read a 'good book' with a cup of gluten-free, 100% non-GMO, Rainforest Alliance Certified Coffee. 
@@ -31,8 +31,7 @@ There is at least one argument that helped me obtain code execution, which was t
 
 1. The `shell` parameter in both calls are set to `true`. That's a no no, especially if you allow a user to supply input to your script or program. In simple terms, this tells Python to execute the string containing the command(s) as if you were doing it in a bash shell.
 
-2. The `command` variable is a **string** variable that contains the entirety of a bash command, so everything is treated literally so to speak. Rather the string referenced by the `command` variable should have been broken down into a list of strings (`command = ["rpcclient", "-U", "\"{}\"".format(auth), "{}".format(ip) "-c", "\"lsaquery\""]`)
-
+2. The `command` variable is a **string** variable that contains the entirety of a bash command.
 
 Here's the help documentation for ridenum.
 ```
@@ -60,7 +59,10 @@ ridenum.py
 
 Note how I placed the `nc` command with the `IP` argument. Why do I need two `;`? If I don't add another `;` to terminate, it looks like `ridenum.py` tries creating a list of users enumerated during RID cycling, which kills the reverse shell immediately. So placing the second `;` after the `nc` command will keep the reverse shell alive until you exit it.
 
-Command/Shell injection via a Python script is really that simple. The fix to this is also pretty simple. Get rid of the `shell=True` or explicitly use `shell=False`. In addition breaking down the `command` variable down into a list of strings would fix the issue also as this wouldn't treat each subsquent string as an argument to the string in the first indice.
+## The Fix
+Command/Shell injection via a Python script is really that simple. The fix to this is also pretty simple. Get rid of the `shell=True` or explicitly use `shell=False`. In addition breaking down the `command` variable down into a list of strings would fix the issue also as this wouldn't treat each subsquent string as an argument to the string in the first indice. 
+
+Change `subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)` to `subprocess.Popen(["rpcclient", "-U", "\"{}\"".format(auth), "{}".format(ip), "-c", "\"lsaquery\""], stdout=subprocess.PIPE, shell=True)`
 
 
 ## You can play with the following source code below to get a better understanding.
