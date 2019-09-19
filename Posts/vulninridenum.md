@@ -27,7 +27,10 @@ There are two arguments that helped me to perform command injection. If you look
 
 Two things can be taken in to consideration at this point (links 3, 4 and 5 above do a great job explaining the problems):
 
-1. The `shell` parameter in both calls are set to `true`. That's a no no, especially if you allow a user to supply input to your script or program. In simple terms, this tells Python to execute the string containing the command(s) as if you were doing it in a bash shell. Lets look at an example:
+1. The `shell` parameter in both calls are set to `true`. That's a no no, especially if you allow a user to supply input to your script or program. In simple terms, this tells Python to execute the string containing the command(s) as if you were doing it in a bash shell.
+
+2. The `command` variable is a whole string variable that contains the entirety of a bash command, so everything is treated literally so to speak. Rather the string referenced by the `command` variable should have been broken down into a list of strings (`command = ["rpcclient", "-U", "\"{}\"".format(auth), "{}".format(ip) "-c", "\"lsaquery\""]`)
+
 
 Here's the help documentation for ridenum.
 ```
@@ -46,7 +49,7 @@ Result (I'm executing this on my Kali machine locally, that's why I'm root):
 uid=0(root) gid=0(root) groups=0(root)
 bash: 100: command not found
 ```
-Note the error below the output of the `id` command and how I placed the `id` command with the `IP` argument. Why do I need two `;`? If this were executed as `;id 100 1000 0v3rride` then everything after `id<space>` is treated as an argument to the `id` command. So in this case an error would be `id: extra operand ‘1000’`. One can run the bash command `id` and supply it a username as an argument (`id <username>`). 
+Note the error below the output of the `id` command and how I placed the `id` command with the `IP` argument. Why do I need two `;`? If this were executed as `;id 100 1000 0v3rride` then everything after `id<space>` is treated as an argument to the `id` command. So in this case the error would be `id: extra operand ‘1000’`. One can run the bash command `id` and supply it a username as an argument (`id <username>`). 
 
 Let's get the id information for the account `ntp`.
 ```
@@ -55,4 +58,23 @@ Let's get the id information for the account `ntp`.
 uid=111(ntp) gid=114(ntp) groups=114(ntp)
 bash: 100: command not found
 ```
- 
+
+The injection point for the auth command is even easier. Since ridenum wants you to give arguments in a specified order and everything after the `<end_rid>` argument is optional, you don't need another `;` to terminate. However, you will have to wait for ridenum to run all the way through until it executes the command that was injected. In this case I feed it an invalid IP address so it would execute faster, because it fails.
+
+```
+./ridenum.py 10.10.10.10 100 1000 0v3rride;id
+[*] Attempting lsaquery first...This will enumerate the base domain SID
+[!] Unable to enumerate through lsaquery, trying default account names..
+[!] Failed using account name: administrator...Attempting another.
+[!] Failed using account name: guest...Attempting another.
+[!] Failed using account name: krbtgt...Attempting another.
+[!] Failed using account name: root...Attempting another.
+[!] Failed to enumerate SIDs, pushing on to another method.
+[*] Enumerating user accounts.. This could take a little while.
+[*] Attempting enumdomusers to enumerate users...
+[!] Sorry. RIDENUM failed to successfully enumerate users. Bummers.
+uid=0(root) gid=0(root) groups=0(root)
+```
+
+Command/Shell injection via a Python script is really that simple. The fix to this is also pretty simple. Get rid of the `shell=true` argument and break the `command` variable down into a list of strings.
+
