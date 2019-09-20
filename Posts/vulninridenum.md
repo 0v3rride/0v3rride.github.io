@@ -3,13 +3,13 @@
 # Python's Risky Subprocess Module & Pwning A Pentesting Tool
 _____________________________________________________________________
 
-For some reason looking at other people's source code makes me get all warm and fuzzy inside. Kinda of like the description a Millenial hipster gives you. You know, when they tell you how they sat down and read a 'good book' with a cup of gluten-free, 100% non-GMO, Rainforest Alliance Certified Coffee. 
+For some reason looking at other people's source code makes me feel all warm and fuzzy inside. Kinda of like the description a Millenial hipster gives you. You know, when they tell you how they sat down and read a 'good book' with a cup of gluten-free, 100% non-GMO, Rainforest Alliance Certified Coffee. 
 
-Reading source code from other individuals or groups can give you an insight into a lot of things like:
+Reading source code from other individuals can give you an insight into a lot of things like:
   * New syntax and syntactical methods that you never knew existed in a language
   * How to get code to execute by bypassing AV, countermeasures, etc.
   * What not to do when developing an application of any sort
-  * What the drug or alcohol choice of the individual/group was during development ;)
+  * What the alcohol choice was during development ;)
   
 ## Some Of Python's Dangerous Functions & Methods
 Python is a fantastic language. It's one of my favorites along side PowerShell, and C#. However, like all computer languages it doesn't come without it's flaws or dangerous functions and methods. You can read more about some of those dangerous functions and methods in the below links:
@@ -20,10 +20,10 @@ Python is a fantastic language. It's one of my favorites along side PowerShell, 
  5. [A Medium Blog About Python Shell Injection](https://medium.com/python-pandemonium/a-trap-of-shell-true-in-the-subprocess-module-6db7fc66cdfd)
  6. [Official Python Documentation](https://docs.python.org/3.7/library/subprocess.html#popen-objects)
  
-The links above focus more in which a user is prompted to provide input via the `input` function in Python. Leveraging command injection via command line arguments that will be parsed by a script will be a little trickier, but it's still very simple to do.
+The links above focus more in which a user is prompted to provide input via the `input` function in Python, etc. Leveraging command injection via command line arguments that will be parsed by a script will be a little trickier, but it's still very simple to do.
  
 ## The Vulnerability
-The vulnerability itself is not super-duper serious as a vast majority of Linux machines will probably not have this tool installed. While working on a CTF problem involving SIDs and looking for another tool to compare with Impacket's lookupsid.py script, I came across a tool written by Dave Kennedy (ReL1K) called RidEnum.py. I was interested in how both tools were obtaining the Domain SID, but that's not really important. However, I noticed in the source code on the [github page](https://github.com/trustedsec/ridenum/blob/master/ridenum.py) that the tool is using `Subprocess.Popen` objects to execute a shell command. These appear on the following lines:
+The vulnerability itself is not super-duper serious as it's a script that's only used by a specific group of individuals and you need access to run it locally. While working on a CTF problem involving SIDs and looking for another tool to compare with Impacket's lookupsid.py script, I came across a tool written by Dave Kennedy (ReL1K) called RidEnum.py. I was interested in how both tools were obtaining the domain and local machine SID, but that's not really important. However, I noticed in the source code on the [github page](https://github.com/trustedsec/ridenum/blob/master/ridenum.py) that the tool is using `Subprocess.Popen` objects to execute a shell command. These appear on the following lines:
  * 62
  * 78
  * 111
@@ -43,7 +43,7 @@ Example: ./ridenum.py 192.168.1.50 500 50000 /root/dict.txt /root/user.txt
 
 Usage: ./ridenum.py <server_ip> <start_rid> <end_rid> <optional_username> <optional_password> <optional_password_file> <optional_username_filename>
 ```
-As I said before, doing this via command line arguments is a little tricker. One would expect that all they would have to do is excute the following command `./ridenum.py 10.10.10.10;id; 100 1000 0v3rride`. This doesn't work, because all you're doing is terminating the `ridenum.py` script prematurely without giving it all of the required arguments, calling the bash command `id` and then specifying abunch of crap after the fact that has no meaning in bash (`100 1000 0v3rride`). Take a look at point two again above and notice the keyword 'string'.
+As I said before, doing this via command line arguments is a little trickier. One would expect that all they would have to do is excute the following command `./ridenum.py 10.10.10.10;id; 100 1000 0v3rride`. This doesn't work, because all you're doing is terminating the `ridenum.py` script prematurely without giving it all of the required arguments, calling the bash command `id` and then specifying abunch of junk after the fact that has no meaning in bash (`100 1000 0v3rride`). Take a look at point two again above and notice the keyword 'string'.
 
 Let's execute ridenum and inject a Netcat command to give us a reverse shell.
 ```
