@@ -29,7 +29,7 @@ The vulnerability itself is not super-duper serious as a vast majority of Linux 
  * 111
  * 256
 
-There are at least two arguments that helped me obtain code execution, which was the argument for the remote host's IP address and the `auth` argument. If you look closely, you'll note that the variable `command` which will store the string representation of the command to be executed takes the `auth` (or optional username argument) and the IP argument and then places them into the string using the "old style" string formatting operator (`%`).
+There are at least two arguments that helped me obtain code execution, which was the argument for the remote host's IP address and the `auth` argument. If you look closely, you'll note that the variable `command` which will store the string representation of the command to be executed takes the `auth` (optional username + % + optional password) and the IP argument and then places them into the string using the "old style" string formatting operator (`%`).
 
 ### Two things can be taken in to consideration at this point (links 3, 4 and 5 above do a great job explaining the problems):
 
