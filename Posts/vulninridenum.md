@@ -29,7 +29,7 @@ The vulnerability itself is not super-duper serious as a vast majority of Linux 
  * 111
  * 256
 
-There is at least one argument that helped me obtain code execution, which was the argument for the rhost's IP address. It also looks like the `auth` argument is a possibility, but I've had no luck with using it. If you look closely, you'll note that the variable `command` which will store the string representation of the command to be executed takes the `auth` (or optional username argument) and the IP argument and then places them into the string using the "old style" string formatting operator (`%`).
+There is one argument that helped me obtain code execution, which was the argument for the remote host's IP address. It also looked like the `auth` argument was a possibility, but further investigation showed that it was not a viable option for command injection. If you look closely, you'll note that the variable `command` which will store the string representation of the command to be executed takes the `auth` (or optional username argument) and the IP argument and then places them into the string using the "old style" string formatting operator (`%`).
 
 ### Two things can be taken in to consideration at this point (links 3, 4 and 5 above do a great job explaining the problems):
 
@@ -62,6 +62,8 @@ ridenum.py
 ```
 
 Note how I placed the `nc` command with the `IP` argument. Why do I need two `;`? If I don't add another `;` to terminate, `ridenum.py` tries creating a list of users enumerated during RID cycling, which kills the reverse shell immediately. So placing the second `;` after `-c bash` will keep the reverse shell alive until you exit it.
+
+Command injection via the `auth` argument isn't possible, because it's treated as string. Take a look at line 59 on the github page for ridenum. Note that the argument supplied is enclosed in additional double quotes. Thus, the argument will be treated as actual string rather than an actual bash command. To confirm this, I removed the double quotes that the `auth` argument (`user%pass`) was enclosed in and was able to obtain a reverse shell.
 
 ## The Fix
 Command/Shell injection via a Python script is really that simple. The fix to this is also pretty simple. Get rid of the `shell=True` or explicitly use `shell=False`. In addition, breaking down the string in referenced by the`command` variable into a list of strings would fix the issue also as this wouldn't treat each subsquent string as an argument to the string in the first indice. 
