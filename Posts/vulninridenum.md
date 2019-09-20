@@ -61,8 +61,7 @@ README.md
 ridenum.py
 ```
 
-Note how I placed the `nc` command with the `IP` argument. Why do I need two `;`? If I don't add another `;` to terminate, `ridenum.py` tries creating a list of users enumerated during RID cycling, which kills the reverse shell immediately. So placing the second `;` after `-c bash` will keep the reverse shell alive until you exit it.
-
+Note the double quotes surrounding the `ip` argument. Also note how I placed the `nc` command within the `ip` argument. Why do I need two `;`? If I don't add another `;` to terminate, `ridenum.py` tries creating a list of users enumerated during RID cycling, which kills the reverse shell immediately. So placing the second `;` after `-c bash` will keep the reverse shell alive until you exit it.
 
 ### More on the `auth` argument
 There's an important point I want to address concerning command injection via the `auth` argument. Take a look at line 59 (`command = 'rpcclient -U "%s" %s -c "lsaquery"' % (auth, ip)`) on the github page for ridenum. Note that the argument supplied is enclosed in additional double quotes. Thus, the argument will be treated as actual string rather than an actual bash command. To confirm this, I removed the double quotes that the `auth` argument (`user%pass`) was enclosed in and was able to obtain a reverse shell. So this means that command injection via the `auth` argument being used on line 59 will not inject the command successfully. However, on line 73 (`command = 'rpcclient -U "" %s -c "lookupnames %s"' % (auth, ip)`) a shell command call to invoke rpcclient is made again to use the lookupnames command, but this time the argument given for `auth` is not enclosed in double quotes. This is were the command will be injected if the `auth` argument is used for injection. Also take note that this time the `ip` argument is enclosed in double quotes.
