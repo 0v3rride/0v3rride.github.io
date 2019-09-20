@@ -29,7 +29,7 @@ The vulnerability itself is not super-duper serious as a vast majority of Linux 
  * 111
  * 256
 
-There is one argument that helped me obtain code execution, which was the argument for the remote host's IP address. It also looked like the `auth` argument was a possibility, but further investigation showed that it was not a viable option for command injection. If you look closely, you'll note that the variable `command` which will store the string representation of the command to be executed takes the `auth` (or optional username argument) and the IP argument and then places them into the string using the "old style" string formatting operator (`%`).
+There are at least two arguments that helped me obtain code execution, which was the argument for the remote host's IP address and the `auth` argument. If you look closely, you'll note that the variable `command` which will store the string representation of the command to be executed takes the `auth` (or optional username argument) and the IP argument and then places them into the string using the "old style" string formatting operator (`%`).
 
 ### Two things can be taken in to consideration at this point (links 3, 4 and 5 above do a great job explaining the problems):
 
@@ -63,12 +63,14 @@ ridenum.py
 
 Note how I placed the `nc` command with the `IP` argument. Why do I need two `;`? If I don't add another `;` to terminate, `ridenum.py` tries creating a list of users enumerated during RID cycling, which kills the reverse shell immediately. So placing the second `;` after `-c bash` will keep the reverse shell alive until you exit it.
 
-Command injection via the `auth` argument isn't possible, because it's treated as string. Take a look at line 59 on the github page for ridenum. Note that the argument supplied is enclosed in additional double quotes. Thus, the argument will be treated as actual string rather than an actual bash command. To confirm this, I removed the double quotes that the `auth` argument (`user%pass`) was enclosed in and was able to obtain a reverse shell.
+
+### More on the `auth` argument
+There's an important point I want to address concerning command injection via the `auth` argument. Take a look at line 59 (`command = 'rpcclient -U "%s" %s -c "lsaquery"' % (auth, ip)`) on the github page for ridenum. Note that the argument supplied is enclosed in additional double quotes. Thus, the argument will be treated as actual string rather than an actual bash command. To confirm this, I removed the double quotes that the `auth` argument (`user%pass`) was enclosed in and was able to obtain a reverse shell. So this means that command injection via the `auth` argument being used on line 59 will not inject the command successfully. However, on line 73 (`command = 'rpcclient -U "" %s -c "lookupnames %s"' % (auth, ip)`) a shell command call to invoke rpcclient is made again to use the lookupnames command, but this time the argument given for `auth` is not enclosed in double quotes. This is were the command will be injected if the `auth` argument is used for injection. Also take note that this time the `ip` argument is enclosed in double quotes.
 
 ## The Fix
-Command/Shell injection via a Python script is really that simple. The fix to this is also pretty simple. Get rid of the `shell=True` or explicitly use `shell=False`. In addition, breaking down the string in referenced by the`command` variable into a list of strings would fix the issue also as this wouldn't treat each subsquent string as an argument to the string in the first indice. 
+Command/Shell injection via a Python script is really that simple. The fix to this is also pretty simple. Get rid of the `shell=True` or explicitly use `shell=False`. In addition, breaking down the string in referenced by the`command` variable into a list of strings would fix the issue also as this wouldn't treat each subsquent string as an argument to the string in the first indice. You could enclose arguments in escaping quotes, but that's not really necessary if you implement the two former options.
 
-For example changing `subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)` to `subprocess.Popen(["rpcclient", "-U", "{}".format(auth), "{}".format(ip), "-c", "lsaquery"], stdout=subprocess.PIPE)` removes the chance for command injection.
+For example changing `subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)` to `subprocess.Popen(["rpcclient", "-U", "{}".format(auth), "{}".format(ip), "-c", "lsaquery"], stdout=subprocess.PIPE)` removes the chance for command injection. `shell=False` does not have to be explicitly stated as it is a default.
 
 
 #### You can play with the following source code below to get a better understanding.
