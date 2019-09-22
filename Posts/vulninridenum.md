@@ -29,13 +29,13 @@ The vulnerability itself is not super-duper serious as it's a script that's only
  * 111
  * 256
 
-There are at least two arguments that helped me obtain code execution, which was the argument for the remote host's IP address and the `auth` argument. If you look closely, you'll note that the variable `command` which will store the string representation of the command to be executed takes the `auth` (optional username + % + optional password) and the IP argument and then places them into the string using the "old style" string formatting operator (`%`).
+There are at least two arguments that helped me obtain code execution, which was the argument for the remote host's IP address and the `auth` argument. If you look closely, you'll note that the variable named `command` which will store the string representation of the command to be executed takes the `auth` (optional username + % + optional password) and the IP argument and then places them into the string using the "old style" string formatting operator (`%`).
 
 ### Two things can be taken into consideration at this point (links 3, 4 and 5 above do a great job explaining the problems):
 
 1. The `shell` parameter in both calls are set to `true`. That's a no-no, especially if you allow a user to supply input to your script. In simple terms, this tells Python to execute the string containing the command(s) as if you were doing it in a bash shell.
 
-2. The `command` variable is a **string** variable that contains the entirety of a bash command.
+2. The variable named `command` is a **string** variable that contains the entirety of a bash command.
 
 Here's the help documentation for ridenum.
 ```
