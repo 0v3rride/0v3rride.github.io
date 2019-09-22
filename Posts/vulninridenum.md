@@ -12,7 +12,7 @@ Reading source code from other individuals can give you an insight into a lot of
   * If alcohol was present during development ;)
   
 ## Python's Risky Subprocess Module
-Python is a fantastic language. It's one of my favorites along side PowerShell, C# and some others. However, like all computer languages it doesn't come without it's flaws or dangerous functions and methods. You can read more about some of those dangerous functions and methods in the below links:
+Python is a fantastic language. It's one of my favorites alongside PowerShell, C# and some others. However, like all computer languages, it doesn't come without its flaws or dangerous functions and methods. You can read more about some of those dangerous functions and methods in the below links:
  1. [Dangerous Python Functions Part 1](https://www.kevinlondon.com/2015/07/26/dangerous-python-functions.html)
  2. [Dangerous Python Functions Part 2](https://www.kevinlondon.com/2015/08/15/dangerous-python-functions-pt2.html)
  3. [OpenStack: Use Subprocess Securely](https://security.openstack.org/guidelines/dg_use-subprocess-securely.html)
@@ -20,10 +20,10 @@ Python is a fantastic language. It's one of my favorites along side PowerShell, 
  5. [A Medium Blog About Python Shell Injection](https://medium.com/python-pandemonium/a-trap-of-shell-true-in-the-subprocess-module-6db7fc66cdfd)
  6. [Official Python Documentation](https://docs.python.org/3.7/library/subprocess.html#popen-objects)
  
-The links above focus more in which a user is prompted to provide input via the `input` function in Python, etc. Leveraging command injection via command line arguments that will be parsed by a script will be a little trickier, but it's still very simple to do.
+The links above focus more in which a user is prompted to provide input via the `input` function in Python, etc. Leveraging command injection via command-line arguments that will be parsed by a script will be a little trickier, but it's still very simple to do.
  
 ## The Vulnerability
-The vulnerability itself is not super-duper serious as it's a script that's only used by a specific group of individuals and you need access to run it locally. While working on a CTF problem involving SIDs and looking for another tool to compare with Impacket's lookupsid.py script, I came across a tool written by Dave Kennedy (ReL1K) called RidEnum.py. I was interested in how both tools were obtaining the domain and local machine SID, but that's not really important. However, I noticed in the source code on the [github page](https://github.com/trustedsec/ridenum/blob/master/ridenum.py) that the tool is using `Subprocess.Popen` objects to execute a shell command. These appear on the following lines:
+The vulnerability itself is not super-duper serious as it's a script that's only used by a specific group of individuals and you need access to run it locally. While working on a CTF problem involving SIDs and looking for another tool to compare with Impacket's lookupsid.py script, I came across a tool written by Dave Kennedy (ReL1K) called RidEnum.py. I was interested in how both tools were obtaining the domain and local machine SID, but that's not important. However, I noticed in the source code on the [github page](https://github.com/trustedsec/ridenum/blob/master/ridenum.py) that the tool is using `Subprocess.Popen` objects to execute a shell command. These appear on the following lines:
  * 62
  * 78
  * 111
@@ -31,9 +31,9 @@ The vulnerability itself is not super-duper serious as it's a script that's only
 
 There are at least two arguments that helped me obtain code execution, which was the argument for the remote host's IP address and the `auth` argument. If you look closely, you'll note that the variable `command` which will store the string representation of the command to be executed takes the `auth` (optional username + % + optional password) and the IP argument and then places them into the string using the "old style" string formatting operator (`%`).
 
-### Two things can be taken in to consideration at this point (links 3, 4 and 5 above do a great job explaining the problems):
+### Two things can be taken into consideration at this point (links 3, 4 and 5 above do a great job explaining the problems):
 
-1. The `shell` parameter in both calls are set to `true`. That's a no no, especially if you allow a user to supply input to your script. In simple terms, this tells Python to execute the string containing the command(s) as if you were doing it in a bash shell.
+1. The `shell` parameter in both calls are set to `true`. That's a no-no, especially if you allow a user to supply input to your script. In simple terms, this tells Python to execute the string containing the command(s) as if you were doing it in a bash shell.
 
 2. The `command` variable is a **string** variable that contains the entirety of a bash command.
 
@@ -58,13 +58,13 @@ whoami
 tester
 ```
 
-Note the double quotes surrounding the `ip` argument. The string that represents the `ip` argument is evaluated by the `Popen` object. It's similar to how the `Invoke-Expression` cmdlet works in PowerShell. It evaluates a string that's valid syntax and executes it. Also note how I placed the `nc` command within the `ip` argument. Why do I need two `;`? If I don't add another `;` to terminate, `ridenum.py` tries creating a list of users enumerated during RID cycling, which kills the reverse shell immediately. So placing the second `;` after `-c bash` will keep the reverse shell alive until you exit it.
+Note the double quotes surrounding the `IP` argument. The string that represents the `IP` argument is evaluated by the `Popen` object. It's similar to how the `Invoke-Expression` cmdlet works in PowerShell. It evaluates a string that's valid syntax and executes it. Also, note how I placed the `nc` command within the `IP` argument. Why do I need two `;`? If I don't add another `;` to terminate, `ridenum.py` tries creating a list of users enumerated during RID cycling, which kills the reverse shell immediately. So placing the second `;` after `-c bash` will keep the reverse shell alive until you exit it.
 
 ### More on the `auth` argument
-There's an important point I want to address concerning command injection via the `auth` argument. Take a look at line 59 (`command = 'rpcclient -U "%s" %s -c "lsaquery"' % (auth, ip)`) on the github page for ridenum. Note that the data supplied for the `auth` argument is enclosed in additional double quotes. Thus, the argument will be treated as actual string rather than an actual bash command. To confirm this, I removed the double quotes that the `auth` argument (`user%pass`) was enclosed in and was able to obtain a reverse shell. So this means that command injection via the `auth` argument being used on line 59 will not be successful. However, on line 73 (`command = 'rpcclient -U "" %s -c "lookupnames %s"' % (auth, ip)`) a shell command call to invoke rpcclient is made again to use the lookupnames command, but this time the argument given for `auth` is not enclosed in double quotes. This is were the command will be injected if the `auth` argument is used for injection. Also take note that this time the `ip` argument is enclosed in double quotes.
+There's an important point I want to address concerning command injection via the `auth` argument. Take a look at line 59 (`command = 'rpcclient -U "%s" %s -c "lsaquery"' % (auth, IP)`) on the GitHub page for ridenum. Note that the data supplied for the `auth` argument is enclosed in additional double-quotes. Thus, the argument will be treated as an actual string rather than an actual bash command. To confirm this, I removed the double quotes that the `auth` argument (`user%pass`) was enclosed in and was able to obtain a reverse shell. So this means that command injection via the `auth` argument being used on line 59 will not be successful. However, on line number 73 (`command = 'rpcclient -U "" %s -c "lookupnames %s"' % (auth, IP)`) a shell command call to invoke rpcclient is made again to use the lookupnames command, but this time the argument given for `auth` is not enclosed in double-quotes. This is where the command will be injected if the `auth` argument is used for injection. Also, take note that this time the `IP` argument is enclosed in double-quotes.
 
 ## The Fix
-Command/Shell injection via a Python script is really that simple. The fix to this is also pretty simple. Get rid of the `shell=True` or explicitly use `shell=False`. In addition, breaking down the string referenced by the `command` variable into a list of strings would fix the issue also. Doing this will not treat each string value in subsequent indices as an argument to the string in the first indice. You could enclose arguments in literal quotes, but that's not really necessary if you implement the two former options.
+Command/Shell injection via a Python script is that simple. The fix to this is also pretty simple. Get rid of the `shell=True` or explicitly use `shell=False`. Also, breaking down the string referenced by the `command` variable into a list of strings would fix the issue too. Doing this will not treat each string value in subsequent indices as an argument to the string in the first index. You could enclose arguments in literal quotes, but that's not necessary if you implement the two former options.
 
 For example changing `subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)` to `subprocess.Popen(["rpcclient", "-U", "{}".format(auth), "{}".format(ip), "-c", "lsaquery"], stdout=subprocess.PIPE)` removes the chance for command injection. `shell=False` does not have to be explicitly stated as it is a default.
 
