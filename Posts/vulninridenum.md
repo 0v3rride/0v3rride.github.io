@@ -3,7 +3,7 @@
 # Python's Risky Subprocess Module & Leveraging CMDi In A Pentesting Tool
 _____________________________________________________________________
 
-I'd never thought I would have enjoyed reading other individuals source code as much as I do now. There's just something so gratifying about it. Dissecting someone's application, script or program looking for a flaw to leverage or a lapse in logic that can be manipulated is exhilarating. 
+I would have never have thought that I would have enjoyed reading other individuals source code as much as I do now. There's just something so gratifying about it. Dissecting someone's application, script or program looking for a flaw to leverage or a lapse in logic that can be manipulated is exhilarating. 
 
 Reading source code from other individuals can give you an insight into a lot of things like some of the below items:
   * New syntax and syntactical methods that you never knew existed in a language
