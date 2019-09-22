@@ -1,6 +1,6 @@
 ![Linkedin](Post%20Images/linkedin.png) [Linkedin](https://www.linkedin.com/in/ryangore/) | ![Github](Post%20Images/github.png) [Github](https://github.com/0v3rride)
 
-# Python's Risky Subprocess Module & Pwning A Pentesting Tool
+# Python's Risky Subprocess Module & Leveraging CMDi In A Pentesting Tool
 _____________________________________________________________________
 
 I'd never thought I would have enjoyed reading other individuals source code as much as I do now. There's just something so gratifying about it. Dissecting someone's application, script or program looking for a flaw to leverage or a lapse in logic that can be manipulated is exhilarating. 
