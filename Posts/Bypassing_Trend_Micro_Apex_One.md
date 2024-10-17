@@ -59,7 +59,7 @@ Note the following: `powershell -executionpolicy unrestricted -nologo -noexit -n
 
 ## A Shocking Revelation
 
-During testing, I needed to gather metrics from other AV and EDR solutions to compare against Apex One. Why not start with Windows Defender in the latest Windows 10 Pro build? I created an ISO build 1803 (and later 1903 after testing a trial version of CrowdStrike Falcon Prevent), installed the latest updates for the operating system and definitions for Defender. The results shocked me, to say the least. You'd think a free, built-in AV that comes with Windows would be absolute trash, but it's quite the opposite. From my testing, Windows Defender and ASMI in build 1803 were able to block almost everything Apex One wasn't. It even blocked the aforementioned PowerShell oneliner from the GitHub link.
+During testing, I needed to gather metrics from other AV and EDR solutions to compare against Apex One. Why not start with Windows Defender in the latest Windows 10 Pro build? I created an ISO build 1803 (and later 1903 after testing a trial version of CrowdStrike Falcon Prevent), installed the latest updates for the operating system and definitions for Defender. The results shocked me, to say the least. You'd think a free, built-in AV that comes with Windows would be absolute trash, but it's quite the opposite. From my testing, Windows Defender and ASMI in build 1803 were able to block almost everything Apex One wasn't. It even blocked the aforementioned ![PowerShell oneliner](https://gist.github.com/egre55/c058744a4240af6515eb32b2d33fbed3) from the GitHub link.
 
 ![Github One-liner](Post%20Images/TMAO-Bypass-imgs/misc-imgs/amsi_github_oneliner.PNG)
 
