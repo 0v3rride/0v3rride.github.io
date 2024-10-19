@@ -31,7 +31,7 @@ ExposureGraphEdges
 | where TargetNodeLabel matches regex "microsoft\\.*"
 ```
 
-You could break this down even more and see what roles or permissions a source node on a target node:
+You could break this down even more and see what roles or permissions a source node has on a target node:
 ```
 ExposureGraphEdges
 | where SourceNodeLabel has_any ("user", "group", "role", "service", "managed") and TargetNodeLabel matches regex "microsoft\\.*"
@@ -43,5 +43,4 @@ ExposureGraphEdges
 | extend roleName = roles.name
 | project SourceNodeLabel, SourceNodeName, roleName, TargetNodeLabel, TargetNodeName
 | order by SourceNodeName asc
-"""
 ```
