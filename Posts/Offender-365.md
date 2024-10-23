@@ -1,7 +1,5 @@
 # Offender 365
 
-![Linkedin](Post%20Images/linkedin.png) [Linkedin](https://www.linkedin.com/in/ryangore/) | ![Github](Post%20Images/github.png) [Github](https://github.com/0v3rride)
-
 ## Background
 I recently completed the MCRTP exam from Pwnedlabs. Finally an offensive Azure course on the same tier as those offered by Offensive Security. The course itself included a lot of information that I feel like the SANS GCPN glossed over.
 During the course there were a couple of areas in Azure/O365 that piqued my intrests and wanted to circle back on after completing the exam.
