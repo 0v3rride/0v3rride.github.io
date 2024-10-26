@@ -23,7 +23,8 @@ ran through the [graph api](https://learn.microsoft.com/en-us/graph/api/security
 
 If you manage to grab an access token with the ThreatHunting.Read.All API permission or the credentials of an entra user assigned with the security reader, security operator or security administrator entra role. Then you're presented the possibility of enumerating resources within the tenant via advanced threat hunting. The [exposure graph](https://learn.microsoft.com/en-us/security-exposure-management/query-enterprise-exposure-graph) within advanced hunting can help with this. Specifically [ExposureGraphNodes](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-exposuregraphnodes-table) and [ExposureGraphEdges](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-exposuregraphedges-table). 
 
-*Note, that this works even if the principal doesn't have any subscriptions or resources assigned to it.*
+### Note: This works even if the principal doesn't have any subscriptions or resources assigned to it.
+
 
 Here's a basic query that looks for all possible Azure resources within the tenant:
 ```
