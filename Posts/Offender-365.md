@@ -41,7 +41,7 @@ ExposureGraphEdges
 This is great and all, but there's still not a convienient way to interact with Defender 365 using APIs other than registering a app within Entra. 
 
 So, time to use trusty old burp suite to analyze some requests. When logged into the Defender 365 portal as a user with the security reader role. I discovered that everytime a query was executed the request would be sent to the following URL, `https://security.microsoft.com/apiproxy/mtp/huntingService/queryExecutor?useFanOut=false`. 
-Doing a quick Google search the [following article from Falcon Force](https://medium.com/falconforce/microsoft-defender-for-endpoint-internals-0x04-timeline-3f01282839e4), described this as an API proxy that Microsoft has put in place to prevent interaction in this manner. It is also mentioned that the folks at Falcon Force were able to write a Python script that works around the API proxy. This specific python script isn't shared though. 
+Doing a quick Google search the [following article from Falcon Force](https://medium.com/falconforce/microsoft-defender-for-endpoint-internals-0x04-timeline-3f01282839e4) , described this as an API proxy that Microsoft has put in place to prevent interaction in this manner. It is also mentioned that the folks at Falcon Force were able to write a Python script that works around the API proxy. This specific python script isn't shared though. 
 
 So, I went back to playing around with Burp Suite. Upon replaying the request multiple times and removing various elements, I discovered that the bare minimum needed to make the request work is the following:
 
