@@ -160,6 +160,14 @@ I've added both methods to run threat hunting queries in Habu2:
 * Selenium (`SeleniumRunQuery`)
 * MDE service API for the threat hunting service (`MTPRunQuery`)
 
+The following are examples of how to acquire an access token in Habu2 the necessary scope:
+`.\habu2.py token get --user user@domain.com --password password --client "azure cli" --scope "defender 365"`
+
+Here's what I used with Habu2 to get an access token with the previously mentioned issue that I ran into. On a __managed device__ run the following:
+`.\habu2.py token get --user user@domain.com --password password --client "azure cli" --scope "defender 365" --granttype interactive --endpointversion 1`
+
+I used version one of the the OAuth flow endpoint, because a mangaled access token was given back to me when using the new version two. Anyways, that's a story for a different time.
+
 ## Resources
 * https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery?view=graph-rest-1.0&tabs=http
 * https://www.reddit.com/r/DefenderATP/comments/w9cj8y/pushing_detection_rules_programmatically/
