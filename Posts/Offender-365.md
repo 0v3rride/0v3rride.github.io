@@ -1,30 +1,22 @@
 # Offender 365
 
 ## Background
-I recently completed the MCRTP exam from Pwnedlabs. Finally an offensive Azure course on the same tier as those offered by Offensive Security. The course itself included a lot of information that I feel like the SANS GCPN glossed over.
-During the course there were a couple of areas in Azure/O365 that piqued my intrests and wanted to circle back on after completing the exam.
+I recently completed the MCRTP exam from Pwnedlabs. The course offered a lot of vaulable insight that I felt the SANS GCPN glossed over. During the course, there were a couple of areas in Azure/O365 that piqued my intrests, and wanted to circle back on after completing the exam.
 
 * What makes continous access elevation tokens special?
-* Is there a way to acquire a token via the OAuth flow API with all the necessary scopes to access storage accounts, key vaults with one access token to rule them all?
-  * The token should have similar permissions or scopes to the one you get via interactive login using Connect-AzAccount.
+* Is there a way to acquire a token via the OAuth flow API with all the necessary scopes to access storage accounts and key vaults—one access token to rule them all?
+  * The token should have similar permissions or scopes to the one you get via interactive login using `Connect-AzAccount`.
     
-I'm still digging for answers in the points above, but there's other questions I've been able to find the answer to myself. One I keep asking myself is, can other services or scopes be used as attack paths in an orginization's tenant? Yep!
-
-I remember Ian, our instructor and subject matter expert for the MCRTP, mentioning during one of the sessions that he was 
-looking into Intune as an attack path. Having worked with Intune a little. I know with the appropriate permissions you can execute code remotely (Powershell) on a managed device of your choice. Which in theory should allow you to move laterally from the orginazation's cloud enviroment to on-prem.
+Another question I kept asking myself is, can other services or scopes be leveraged in some way within an organization’s tenant?
 
 ### Defender 365
-What about using the blue team's tools against them? Sure, Defender 365 & Microsoft Defender for Endpoint offer some possibilities. One aspect is research by Thomas Naunheim titled, [Abuse and Detection of M365D Live Response for privilege escalation on Control Plane (Tier0) assets](https://www.cloud-architekt.net/abuse-detection-live-response-tier0/) outlines leveraging Defender's live response feature to execute code on endpoints.
+What about using the blue team's tools against them? Sure, Defender 365 and Microsoft Defender for Endpoint offer some possibilities. One aspect is research by Thomas Naunheim titled, [Abuse and Detection of M365D Live Response for privilege escalation on Control Plane (Tier0) assets](https://www.cloud-architekt.net/abuse-detection-live-response-tier0/), which outlines leveraging Defender's live response feature to execute code on endpoints.
 
-The way Microsoft has laid out Microsoft Defender for Endpoint and Defender 365 is a little confusing. Live response can be accessed via https://api.securitycenter.micorsoft.com scope with the appropriate permissions.
-Defender 365 also outfits blue teams with threat hunting capabilities. This comes in the form of advanced threat hunting in the defender 365 portal, which provides tables to query from to peform threat hunting operations.
-This includes exchange emails, defender for endpoint alerts and incidents and even device network, file and process events. KQL is the query language used to conjure up results. Advanced threat hunting queries can also be
-ran through the [graph api](https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery?view=graph-rest-1.0&tabs=http). However, this is access through the https://graph.micrsoft.com scope. 
+The way Microsoft has laid out Microsoft Defender for Endpoint and Defender 365 is a little confusing. Live response can be accessed via the `https://api.securitycenter.microsoft.com` scope with the appropriate permissions. Defender 365 also outfits blue teams with threat hunting capabilities. This comes in the form of advanced threat hunting in the Defender 365 portal, which provides tables to query for threat hunting operations. This includes Exchange emails, Defender for Endpoint alerts and incidents, and even device network, file, and process events. KQL is the query language used to conjure up results. The API for [threat hunting use to live on the Microsoft Threat Protection API](https://learn.microsoft.com/en-us/defender-endpoint/api/run-advanced-query-api) - (`api.securitycenter.microsoft.com`) and required the `AdvancedHunting.Read.All` API persmission to be granted on the Entra registered app that would use it. Since then Microsoft has moved [threat hunting to the Graph API](https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery?view=graph-rest-1.0&tabs=http). The registered Entra app requires the API permission `ThreatHunting.Read.All` to be granted.
 
-If you manage to grab an access token with the ThreatHunting.Read.All API permission or the credentials of an entra user assigned with the security reader, security operator or security administrator entra role. Then you're presented the possibility of enumerating resources within the tenant via advanced threat hunting. The [exposure graph](https://learn.microsoft.com/en-us/security-exposure-management/query-enterprise-exposure-graph) within advanced hunting can help with this. Specifically [ExposureGraphNodes](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-exposuregraphnodes-table) and [ExposureGraphEdges](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-exposuregraphedges-table). 
+Therefore, if you manage to grab an access token with the `ThreatHunting.Read.All` (Microsoft Graph Security API) or `AdvancedHunting.Read.All` (Microsoft Threat Protection) API permission/role or the credentials of an entra user assigned with the security reader, security operator or security administrator entra role. Then you're presented with some interesting capabilities. Let me elaborate a little more. Advanced threat hunting offers two interesting tables/schemas to pull information about tenant resources via [exposure graph](https://learn.microsoft.com/en-us/security-exposure-management/query-enterprise-exposure-graph). Think of the exposure graph as Microsoft's version of Bloodhound/Azurehound. However, more specifically were interested in the [ExposureGraphNodes](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-exposuregraphnodes-table) and [ExposureGraphEdges](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-exposuregraphedges-table) tables with in advanced hunting. Essentially, the ExposureGraphNode table allows you to enumerate virtually every node (user, serviceprincpal, managed devices, etc.) within the organization's on-prem infrastructure and within the tenant. The best part is that the principal that has access to the advanced threat hunting __DOES NOT__ need to be explicitly assigned to any subscriptions, resources or have any RBAC role assignments based on at least one case I've seen in a production tenant.
 
-### Note: This works even if the principal doesn't have any subscriptions or resources assigned to it.
-
+### TLDR: If you get access to a principal who has the security reader, security operator or security admin entra role assigned to it, or if you get an access token with the above-mentioned API permissions/roles. Then you can see all of the resources deployed in the tenant using the ExposureGraphNode in advanced threat hunting. These resources include sites, function apps, databases and their respective tables, storage accounts and their respective containers, key vaults, VMs, VNets, public IP addresses and more.
 
 Here's a basic query that looks for all possible Azure resources within the tenant:
 ```
@@ -46,22 +38,32 @@ ExposureGraphEdges
 | order by SourceNodeName asc
 ```
 
-This is great and all, but there's still not any convienient way to interact with defender/security center programatically. Analyzing requests in burp suite I discovered that everytime a query was executed the request would be sent to the following URL, https://security.microsoft.com/apiproxy/mtp/huntingService/queryExecutor?useFanOut=false. In the [following article from Falcon Force](https://medium.com/falconforce/microsoft-defender-for-endpoint-internals-0x04-timeline-3f01282839e4), this is described as an apiproxy that Microsoft has put in place to prevent interaction in this manner. It is also mentioned that the folks at Falcon Force were able to write a Python script that works around the apiproxy. However, this isn't shared, linked or present anywhere in their github repo. Oh well.
+This is great and all, but there's still not a convienient way to interact with Defender 365 using APIs other than registering a app within Entra. 
 
-So, back to playing around with trusty old Burp suite. Upon replaying the request multiple times and removing things from it. I discovered that the bare minimum you need to make the request work is the following:
+So, time to use trusty old burp suite to analyze some requests. When logged into the Defender 365 portal as a user with the security reader role. I discovered that everytime a query was executed the request would be sent to the following URL, `https://security.microsoft.com/apiproxy/mtp/huntingService/queryExecutor?useFanOut=false`. 
+Doing a quick Google search the [following article from Falcon Force](https://medium.com/falconforce/microsoft-defender-for-endpoint-internals-0x04-timeline-3f01282839e4), described this as an API proxy that Microsoft has put in place to prevent interaction in this manner. It is also mentioned that the folks at Falcon Force were able to write a Python script that works around the API proxy. This specific python script isn't shared though. 
+
+So, I went back to playing around with Burp Suite. Upon replaying the request multiple times and removing various elements, I discovered that the bare minimum needed to make the request work is the following:
 
 ### Request Headers
 * Cookie: sccauth=...
-* X-Xsrf-Token
+* X-Xsrf-Token: ...
 * Content-Type: application/json
 
-### Post Request Parameters
-* QueryText="KQL query"
-* StartTime="YYYY-mm-ddTHH:MM:sssZ"
-* EndTime="YYYY-mm-ddTHH:MM:sssZ"
-* MaxRecordCount=10
+### Post Request JSON Data
+`{
+   "QueryText": "KQL query here",
+   "StartTime": "YYYY-mm-ddTHH:MM:sssZ", //can be None/Null
+   "EndTime": "YYYY-mm-ddTHH:MM:sssZ", //can be None/Null
+   "MaxRecordCount": 10 //can be None/Null
+}`
 
-In theory you could login to the security and compliance center portal via browser and pull the needed header values with inspect element and then send the post request with the desired values for the parameters. However, to me, this is a major inconvience. What else can we try? Well, I tried mimicking the interactive login flow with python request sessions to no avail. Feel free to give this a shot yourself and please let me know if you get this working.
+Then I found a [follow up article from Falcon Force](https://falconforce.nl/microsoft-defender-for-endpoint-internals-0x05-telemetry-for-sensitive-actions/), which goes into more detail as to how one could create a work around for the API proxy Microsoft has in place. Olaf developed a tool called [DefenderHarvester] (https://github.com/olafhartong/DefenderHarvester/tree/30cfb7558471d2bbadfd279b9c66cb889e9fdfbb) to demonstrate this. The tool makes use of what Olaf calls MDE service APIs. You can view these service API URLs using Burp Suite and examining the response headers. The response header for the specific service you're interested in will be shown in the `X-Source-Url` value. In my case, I am interested in using the threat hunting API. Remember that `https://security.microsoft.com/apiproxy/mtp/huntingService/queryExecutor?useFanOut=false` is the API proxy. Upon reviewing the response headers, I found that the 'real' API the request was being forwarded to was `https://m365d-hunting-api-prd-weu.securitycenter.windows.com/api/ine/huntingservice/queryExecutor?useFanOut=false`. Now, instead of having to use the `sccauth` cookie and `x-xsrf-token` header to make a request, we can simply just grab an access token for the scope `https://securitycenter.microsoft.com/mtp/.default`. This was found by [reading the source code of DefenderHarvester](https://github.com/olafhartong/DefenderHarvester/blob/30cfb7558471d2bbadfd279b9c66cb889e9fdfbb/main.go#L85) and implementing this into my tool. Everything about the request is the same, but this time all that is needed for the headers is the authorization bearer access token that you can acquire in a multitude of different ways. There seems to be caveat though under certain unknown circumstances. In my case when requesting the access token it forced me to do it from a managed device via interactive login with the Edge browser. Any other browser I tried gave me an error. I also tried a couple of different methods without using interactive login, and they all resulted in errors about the device not being managed. In my case this issue only occured for a user in a specific tenant that I was testing. So, this may be related to a policy that is in place on the tenant. I did some additional tests on two other users who were part of different tenants and did not recieve any issues about the device being unmanaged. I'm unsure what the exact cause was in my case, but I'll have to look more into it.
+
+Now we have two ways to access the APIs within Defender 365. One being logging into to security.microsoft.com via browser and pulling the needed header values with inspect element and then sending the post request with the desired values for the parameters. The second using a token acquired from `securitycenter.microsoft.com/mtp` and using it with requests to appropriate MDE service APIs. I should note that the `securitycenter.microsoft.com` is an older domain and has been 'replaced' by the `api.security.microsoft.com` and  `security.microsoft.com` domains. So, this method could stop working at any moment.
+
+What else can we try using to get access to Defender 365 API endpoints? Well, I tried mimicking the interactive login flow with python request sessions to no avail. Feel free to give this a shot yourself and please let me know if you get this working as it could be a solid replacement in the future.
+
 ```
 import requests
 import webbrowser
@@ -149,10 +151,14 @@ response = session.post(url, data=body, headers=headers, proxies={"http": "http:
 
 print(response.cookies.get_dict())
 
-# Despite everything looking like it is setup correctly the response is a 440 - signin reason timeout
+# Despite everything looking like it is setup correctly following the requests in burp. The response is a 440 - signin reason timeout
 ```
 
-Okay, that didn't work. The last resort is using selenium to automate the interactive login flow to security.microsoft.com. The ability to run threat hunting queries in with Habu2 has been added using this method. I'm currently looking into the ability to interact with the live response feature via the apiproxy.
+When doing some troubleshooting to the script above [I found that ROADtools uses selenium to manage interactive logins](https://github.com/search?q=%2Fopenidconnect%5C.nonce%2F&type=code). I don't really like using selenium for things unless I absolutely have to. I figured if it's good enough for ROADtools then it wouldn't hurt to use it in this application as well. So, with no other choice. My last idea was to use `selenium-wire` to automate the interactive login flow to security.microsoft.com and obtain the `sccauth` cookie value and `X-Xsrf-token` response header value. This method is kind of shotty depending on whether the organization's tenant is managed or federated. 
+
+I've added both methods to run threat hunting queries in Habu2:
+* Selenium (`SeleniumRunQuery`)
+* MDE service API for the threat hunting service (`MTPRunQuery`)
 
 ## Resources
 * https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery?view=graph-rest-1.0&tabs=http
