@@ -46,7 +46,7 @@ ExposureGraphEdges
 | order by SourceNodeName asc
 ```
 
-This is great and all, but there's still not any convienient way to interact with defender/security center programatically. Analyzing requests in burp suite I discovered that everytime a query was executed the request would be sent to the following URL, https://security.microsoft.com/apiproxy/mtp/huntingService/queryExecutor?useFanOut=false. In the [following article from Falcon Force](https://medium.com/falconforce/microsoft-defender-for-endpoint-internals-0x04-timeline-3f01282839e4), this is described as an apiproxy that Microsoft has put in place to prevent interaction in this manner. It is also mentioned that the folks at Falcon Force were able to write a Python script that works around the apiproxy. However, this isn't shared, linked or present anywhere in their github repo.
+This is great and all, but there's still not any convienient way to interact with defender/security center programatically. Analyzing requests in burp suite I discovered that everytime a query was executed the request would be sent to the following URL, https://security.microsoft.com/apiproxy/mtp/huntingService/queryExecutor?useFanOut=false. In the [following article from Falcon Force](https://medium.com/falconforce/microsoft-defender-for-endpoint-internals-0x04-timeline-3f01282839e4), this is described as an apiproxy that Microsoft has put in place to prevent interaction in this manner. It is also mentioned that the folks at Falcon Force were able to write a Python script that works around the apiproxy. However, this isn't shared, linked or present anywhere in their github repo. Oh well.
 
 So, back to playing around with trusty old Burp suite. Upon replaying the request multiple times and removing things from it. I discovered that the bare minimum you need to make the request work is the following:
 
@@ -153,3 +153,14 @@ print(response.cookies.get_dict())
 ```
 
 Okay, that didn't work. The last resort is using selenium to automate the interactive login flow to security.microsoft.com. The ability to run threat hunting queries in with Habu2 has been added using this method. I'm currently looking into the ability to interact with the live response feature via the apiproxy.
+
+## Resources
+* https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery?view=graph-rest-1.0&tabs=http
+* https://www.reddit.com/r/DefenderATP/comments/w9cj8y/pushing_detection_rules_programmatically/
+* https://github.com/fooop/DefenderDetectionSync
+* https://medium.com/falconforce/microsoft-defender-for-endpoint-internals-0x04-timeline-3f01282839e4
+* https://medium.com/falconforce/microsoft-defender-for-endpoint-internals-0x05-telemetry-for-sensitive-actions-1b90439f5c25
+* https://github.com/fahri314/365-Defender-Rule-Activator
+* https://github.com/search?q=%2Fapiproxy%5C%2Fmtp%5C%2Fhunting%2F&type=code
+* https://github.com/search?q=%2Fsecurity%5C.microsoft%5C.com%5C%2Fapiproxy%5C%2Fmtp%2F&type=code
+* https://security.microsoft.com/v2/advanced-hunting?tid=tenantidoralias
