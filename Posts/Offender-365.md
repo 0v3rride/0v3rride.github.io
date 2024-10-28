@@ -9,14 +9,15 @@ I recently completed the MCRTP exam from Pwnedlabs. The course offered a lot of 
     
 Another question I kept asking myself is, can other services or scopes be leveraged in some way within an organization’s tenant?
 
+### TLDR 
+If you get access to a principal who has the security reader, security operator or security admin Entra role assigned to it, or if you get an access token with the `ThreatHunting.Read.All` (Microsoft Graph Security API) or `AdvancedHunting.Read.All` (Microsoft Threat Protection) API permission/role. Then you can see all of the resources deployed in the tenant using the ExposureGraphNode schema in advanced threat hunting. These resources include sites, function apps, databases and their respective tables, storage accounts and their respective containers, key vaults, VMs, VNets, public IP addresses and more.
+
 ### Defender 365
 What about using the blue team's tools against them? Sure, Defender 365 and Microsoft Defender for Endpoint offer some possibilities. One aspect is research by Thomas Naunheim titled, [Abuse and Detection of M365D Live Response for privilege escalation on Control Plane (Tier0) assets](https://www.cloud-architekt.net/abuse-detection-live-response-tier0/), which outlines leveraging Defender's live response feature to execute code on endpoints.
 
 The way Microsoft has laid out Microsoft Defender for Endpoint and Defender 365 is a little confusing. Live response can be accessed via the `https://api.securitycenter.microsoft.com` scope with the appropriate permissions. Defender 365 also outfits blue teams with threat hunting capabilities. This comes in the form of advanced threat hunting in the Defender 365 portal, which provides tables to query for threat hunting operations. This includes Exchange emails, Defender for Endpoint alerts and incidents, and even device network, file, and process events. KQL is the query language used to conjure up results. The API for [threat hunting use to live on the Microsoft Threat Protection API](https://learn.microsoft.com/en-us/defender-endpoint/api/run-advanced-query-api) - (`api.securitycenter.microsoft.com`) and required the `AdvancedHunting.Read.All` API persmission to be granted on the Entra registered app that would use it. Since then Microsoft has moved [threat hunting to the Graph API](https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery?view=graph-rest-1.0&tabs=http). The registered Entra app requires the API permission `ThreatHunting.Read.All` to be granted.
 
 Therefore, if you manage to grab an access token with the `ThreatHunting.Read.All` (Microsoft Graph Security API) or `AdvancedHunting.Read.All` (Microsoft Threat Protection) API permission/role or the credentials of an Entra user assigned with the security reader, security operator or security administrator Entra role. Then you're presented with some interesting capabilities. Let me elaborate a little more. Advanced threat hunting offers two interesting tables/schemas to pull information about tenant resources from via [exposure graph](https://learn.microsoft.com/en-us/security-exposure-management/query-enterprise-exposure-graph). Think of the exposure graph as Microsoft's version of Bloodhound/Azurehound. However, more specifically were interested in the [ExposureGraphNodes](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-exposuregraphnodes-table) and [ExposureGraphEdges](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-exposuregraphedges-table) tables with in advanced hunting. Essentially, the ExposureGraphNode table allows you to enumerate virtually every node (user, serviceprincpal, managed devices, etc.) within the organization's on-prem infrastructure and within the tenant. The best part is that the principal that has access to the advanced threat hunting __DOES NOT__ need to be explicitly assigned to any subscriptions, resources or have any RBAC role assignments based on at least one case I've seen in a production tenant.
-
-### TLDR: If you get access to a principal who has the security reader, security operator or security admin Entra role assigned to it, or if you get an access token with the above-mentioned API permissions/roles. Then you can see all of the resources deployed in the tenant using the ExposureGraphNode in advanced threat hunting. These resources include sites, function apps, databases and their respective tables, storage accounts and their respective containers, key vaults, VMs, VNets, public IP addresses and more.
 
 Here's a basic query that looks for all possible Azure resources within the tenant:
 ```
@@ -160,6 +161,7 @@ I've added both methods to run threat hunting queries in Habu2:
 * Selenium (`SeleniumRunQuery`)
 * MDE service API for the threat hunting service (`MTPRunQuery`)
 
+### Practical Applications With Habu2
 The following are examples of how to acquire an access token in Habu2 the necessary scope:
 `.\habu2.py token get --user user@domain.com --password password --client "azure cli" --scope "defender 365"`
 
@@ -168,6 +170,9 @@ Here's what I used with Habu2 to get an access token with the previously mention
 As far as I currently know, Edge must be the browser that opens the interactive login prompt.
 
 I used version one `oauth2/{flow method}` of the the OAuth flow endpoint, because a truncated access token was given back to me when using version two `oauth2/v2.0/{flow method}` Anyways, that's a story for a different time.
+
+Now you can use `.\habu2.py security query`. You can include the `--accesstoken` flag if you have an access token with the necessary scope or you can use `--sccauthtoken` and
+`--xsrftoken` flags if you have those values. If you don't include any of the flags for an access token or header values then the selenium method will kick in for you and grab the needed information.
 
 ## Resources
 * https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery?view=graph-rest-1.0&tabs=http
