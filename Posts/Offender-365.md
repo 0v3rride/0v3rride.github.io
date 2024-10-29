@@ -7,16 +7,19 @@ I recently completed the MCRTP exam from Pwnedlabs. The course offered a lot of 
 * Is there a way to acquire a token via the OAuth flow API with all the necessary scopes to access storage accounts and key vaults—one access token to rule them all?
   * The token should have similar permissions or scopes to the one you get via interactive login using `Connect-AzAccount`.
     
-Another question I kept asking myself is, can other services or scopes be leveraged in some way within an organization’s tenant?
+Another question I kept asking myself is, can other services or scopes be leveraged in some way within an organization’s tenant? It was mentioned during the MCRTP course that others were looking into Intune as something that could be leveraged within a tenant, but I had a different idea. What about using the blue team's tools against them? 
 
 ## TLDR 
-If you get access to a principal who has the security reader, security operator or security admin Entra role assigned to it, or if you get an access token with the `ThreatHunting.Read.All` (Microsoft Graph Security API) or `AdvancedHunting.Read.All` (Microsoft Threat Protection) API permission/role. Then you can see all of the resources deployed in the tenant using the ExposureGraphNode schema in advanced threat hunting. These resources include sites, function apps, databases and their respective tables, storage accounts and their respective containers, key vaults, VMs, VNets, public IP addresses and more.
+If you get access to a principal who has the security reader, security operator or security administrator [Entra role](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference) assigned to it, or if you get an access token with the `ThreatHunting.Read.All` (Microsoft Graph Security API) or `AdvancedHunting.Read.All` (Microsoft Threat Protection) API permission/role. Then you can see all of the resources deployed in the tenant using the ExposureGraphNode schema in advanced threat hunting. These resources include sites, function apps, databases and their respective tables, storage accounts and their respective containers, key vaults, VMs, VNets, public IP addresses and more. Also, if you ever have the ability to start live response sessions and are able to do it on a high value machine like a domain controller. Then, you're basically `domain admin` and possibly well on your way to escalating to `global administrator`.
 
 ## Defender 365
 
 ### MDE Live Response
-What about using the blue team's tools against them? Sure, Defender 365 and Microsoft Defender for Endpoint offer some possibilities. One aspect is research by Thomas Naunheim titled, [Abuse and Detection of M365D Live Response for privilege escalation on Control Plane (Tier0) assets](https://www.cloud-architekt.net/abuse-detection-live-response-tier0/), which outlines leveraging Defender's live response feature to execute code on endpoints.
+One aspect is research by Thomas Naunheim titled, [Abuse and Detection of M365D Live Response for privilege escalation on Control Plane (Tier0) assets](https://www.cloud-architekt.net/abuse-detection-live-response-tier0/), which outlines leveraging Defender's live response feature to execute code on endpoints.
 
+There are mentions of being able to [restrict live response](https://falconforce.nl/microsoft-defender-for-endpoint-internals-0x05-telemetry-for-sensitive-actions/) to certain device groups, but I don't see a way to do that currently. This means it's probably more likely than not that an MDE agent is running on high-value machines like domain controllers. If you're able to compromise a principal or grab an access token with the necessary permissions (see TLDR) and an MDE agent is running on a domain controller, then you can absolutley copy of NTDS.dit, SYSTEM hive and SECURITY hive with the `getfile` [live response command](https://learn.microsoft.com/en-us/defender-endpoint/live-response-command-examples) and start cracking hashes offline. You could also do this for every Windows workstation as well. As far as I know live response does not currently work on Linux or MacOS. Even though the `security reader`, `security operator`, and `security administrator` roles don’t have expansive, highly privileged permissions like `domain admins` or `global administrators`, they should still be treated with the same regard (in my opinion even more scrutiny should be applied) as the latter, as they can certainly get you there if the opportunity arises.
+
+### Defender APIs
 The way Microsoft has laid out the APIs within Azure is a bit confusing. Even though live response and other features such as advanced threat hunting are all seamlessly accessible within the Defender 365 portal. They are in fact accessed through different APIs. For example, anything related to machine actions, machine isolation, machine unisolation, running scans, and interacting with live response is all mainly done through the following API - [https://api.securitycenter.microsoft.com](https://learn.microsoft.com/en-us/defender-endpoint/api/exposed-apis-list). `https://<region>.api.security.microsoft.com` also works in place of the previously mentioned API base url. In this case, to use the live response feature via this API your [Entra registered app](https://learn.microsoft.com/en-us/defender-endpoint/api/exposed-apis-create-app-nativeapp) needs the [API permission](https://learn.microsoft.com/en-us/defender-endpoint/api/run-live-response#permissions) `Machine.LiveResponse`, which is a permission that lives under the WindowsDefenderATP API within Azure. Now, here's the confusing bit. If I wanted to access advanced threat hunting via API calls you think it would be done through the same API, right? Nope! The API for [threat hunting use to be acessible this way](https://learn.microsoft.com/en-us/defender-endpoint/api/run-advanced-query-api), but required the `AdvancedHunting.Read.All` API persmission which lives under the Microsoft Threat Protection API to be granted on the Entra registered app that would use it. Since then Microsoft has moved [threat hunting to the Graph API](https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery?view=graph-rest-1.0&tabs=http). The registered Entra app requires the API permission `ThreatHunting.Read.All` to be granted. Let's do a quick recap.
   
 ### Advanced Threat Hunting
@@ -51,7 +54,7 @@ This is great, but still isn't a convienient way to interact with Defender 365 u
 So, time to use trusty old Burp suite to analyze some requests. When logged into the Defender 365 portal as a user with the security reader role. I discovered that everytime a query was executed the request would be sent to the following URL, `https://security.microsoft.com/apiproxy/mtp/huntingService/queryExecutor?useFanOut=false`. 
 Doing a quick Google search the [following article from Falcon Force](https://medium.com/falconforce/microsoft-defender-for-endpoint-internals-0x04-timeline-3f01282839e4) , described this as an API proxy that Microsoft has put in place to prevent interaction in this manner. It is also mentioned that the folks at Falcon Force were able to write a Python script that works around the API proxy. This specific python script isn't shared though. 
 
-So, I went back to playing around with Burp Suite. Upon replaying the request multiple times and removing various elements, I discovered that the bare minimum needed to make the request work is the following:
+Playing around with the requests. I took note that the bare minimum needed to make the request work is the following:
 
 ### Request Headers
 * Cookie: sccauth=...
@@ -72,7 +75,7 @@ There seems to be caveat though under certain unknown circumstances. In my case 
 
 Now we have two ways to access the APIs within Defender 365. One being logging into to security.microsoft.com via browser and pulling the needed header values with inspect element and then sending the post request with the desired values for the parameters. The second using a token acquired from `securitycenter.microsoft.com/mtp` and using it with requests to the appropriate MDE service APIs. I should note that the `securitycenter.microsoft.com` is an older domain and has been 'replaced' by the `api.security.microsoft.com`, `api.securitycenter.microsoft.com`, and `security.microsoft.com` domains. So, this method could stop working at any moment.
 
-What else can we try using to get access to Defender 365 API endpoints? Well, I tried mimicking the interactive login flow with python request sessions to no avail. Feel free to give this a shot yourself and please let me know if you get this working as it could be a solid replacement in the future.
+What else can we try using to get access to Defender 365 API endpoints? Well, I tried mimicking the interactive login flow with python request sessions to no avail. Feel free to give this a try yourself. Please let me know if you get this working as it could be a solid replacement in the future if acquiring a token from `securitycenter.microsoft.com/mtp` stops working.
 
 ```
 import requests
@@ -182,6 +185,18 @@ I used version one `oauth2/{flow method}` of the the OAuth flow endpoint, becaus
 
 Now you can use `.\habu2.py security query`. You can include the `--accesstoken` flag if you have an access token with the necessary scope or you can use `--sccauthtoken` and
 `--xsrftoken` flags if you have those values. If you don't include any of the flags for an access token or header values then the selenium method will kick in for you and grab the needed information.
+
+
+### Circling Back To Live Response
+I've also implemented the ability to start a live response session with Habu2 if you are able to grab a token with the needed scope, header values or credentials. The other value that is needed is the ID of the machine you want to interact with. This is not the hostname. You can very easily grab the machine ID of the host you want by using the following. Again, this uses one of the two methods as described above that was used for threat hunting. 
+
+`.\habu2.py security query --query "DeviceInfo | where DeviceName contains 'dc-2' | limit 1 | distinct DeviceName, DeviceId"`
+
+Once you have the machine ID you can then use the following to launch a live response session on the machine using the following.
+
+`.\habu2.py security liveresponse --machineid {device id value}` (add additional flags if you have an access token, etc.)
+
+Once the session is establised an interactive prompt should display. You can now use the live response commands to do what you need. Any files obtained through the live response session with `getfile` will be placed into the loot folder that Habu2 uses.
 
 ## Resources
 * https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery?view=graph-rest-1.0&tabs=http
