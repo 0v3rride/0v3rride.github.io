@@ -175,10 +175,10 @@ I've added both methods to run threat hunting queries in Habu2:
 
 ### Practical Use With Habu2
 The following are examples of how to acquire an access token in Habu2 the necessary scope:
-`.\habu2.py token get --user user@domain.com --password password --client "azure cli" --scope "defender 365"`
+`.\habu2.py token get --user user@domain.com --password password --client "azure cli" --scope "mtp"`
 
 Here's what I used with Habu2 to get an access token with the previously mentioned issue that I ran into. On a __managed device__ run the following:
-`.\habu2.py token get --user user@domain.com --password password --client "azure cli" --scope "defender 365" --granttype interactive --endpointversion 1`
+`.\habu2.py token get --user user@domain.com --password password --client "azure cli" --scope "mtp" --granttype interactive --endpointversion 1`
 As far as I currently know, Edge must be the browser that opens the interactive login prompt.
 
 I used version one `oauth2/{flow method}` of the the OAuth flow endpoint, because a truncated access token was given back to me when using version two `oauth2/v2.0/{flow method}` Anyways, that's a story for a different time.
