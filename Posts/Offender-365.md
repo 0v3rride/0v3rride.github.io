@@ -190,11 +190,11 @@ Now you can use `.\habu2.py security query`. You can include the `--accesstoken`
 ### Circling Back To Live Response
 I've also implemented the ability to start a live response session with Habu2 if you are able to grab a token with the needed scope, header values or credentials. The other value that is needed is the ID of the machine you want to interact with. This can be the machine's ID that is found in MDE, FQDN or partial hostname. You can very easily grab the machine ID of the host you want by using the following.
 
-`.\habu2.py security query --query "DeviceInfo | where DeviceName contains 'dc-2' | limit 1 | distinct DeviceName, DeviceId"`
+`.\habu2.py query security --query "DeviceInfo | where DeviceName contains 'dc-2' | limit 1 | distinct DeviceName, DeviceId"`
 
 Once you have the machine ID you can then use the following to launch a live response session on the machine using the following.
 
-`.\habu2.py security liveresponse --machineid {device id value, FQDN or partial name of host}` - add additional flags if you have an access token, etc.
+`.\habu2.py connect liveresponse --machineid {device id value, FQDN or partial name of host}` - add additional flags if you have an access token, etc.
 
 Once the session is establised an interactive prompt should display. You can now use the live response commands to do what you need. Any files obtained through the live response session with `getfile` will be placed into the loot folder that Habu2 uses.
 
