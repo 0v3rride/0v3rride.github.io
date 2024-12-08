@@ -61,7 +61,7 @@ Playing around with the requests. I took note that the bare minimum needed to ma
 * X-Xsrf-Token: ...
 * Content-Type: application/json
 
-The value for X-XSRF-TOKEN and XSRF-TOKEN are the same, but the latter is is url encoded. So, just url decode it and you have your X-XSRF-TOKEN value.
+The value for X-XSRF-TOKEN and XSRF-TOKEN are the same, but the latter is url encoded. So, just url decode it and you have your X-XSRF-TOKEN value.
 
 ### Post Request JSON Data
 `{
