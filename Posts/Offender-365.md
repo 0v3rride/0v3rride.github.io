@@ -49,9 +49,9 @@ ExposureGraphEdges
 | order by SourceNodeName asc
 ```
 
-This is great, but still isn't a convienient way to interact with Defender 365 using APIs other than registering a app within Entra. 
+This is great, but still isn't a convienient way to interact with Defender 365 using APIs other than registering an app within Entra. 
 
-So, time to use trusty old Burp suite to analyze some requests. When logged into the Defender 365 portal as a user with the security reader role. I discovered that everytime a query was executed the request would be sent to the following URL, `https://security.microsoft.com/apiproxy/mtp/huntingService/queryExecutor?useFanOut=false`. 
+So, time to use trusty old Burp suite to analyze some requests. When logged into the Defender 365 portal as a user with the security reader role. I discovered that every time a query was executed the request would be sent to the following URL, `https://security.microsoft.com/apiproxy/mtp/huntingService/queryExecutor?useFanOut=false`. 
 Doing a quick Google search the [following article from Falcon Force](https://medium.com/falconforce/microsoft-defender-for-endpoint-internals-0x04-timeline-3f01282839e4) , described this as an API proxy that Microsoft has put in place to prevent interaction in this manner. It is also mentioned that the folks at Falcon Force were able to write a Python script that works around the API proxy. This specific python script isn't shared though. 
 
 Playing around with the requests. I took note that the bare minimum needed to make the request work is the following:
@@ -60,6 +60,8 @@ Playing around with the requests. I took note that the bare minimum needed to ma
 * Cookie: sccauth=...
 * X-Xsrf-Token: ...
 * Content-Type: application/json
+
+The value for X-XSRF-TOKEN and XSRF-TOKEN are the same, but the latter is is url encoded. So, just url decode it and you have your X-XSRF-TOKEN value.
 
 ### Post Request JSON Data
 `{
