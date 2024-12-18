@@ -1,13 +1,9 @@
 # Offender 365
 
 ## Background
-I recently completed the MCRTP exam from Pwnedlabs. The course offered a lot of vaulable insight that I felt the SANS GCPN glossed over. During the course, there were a couple of areas in Azure/O365 that piqued my intrests, and wanted to circle back on after completing the exam.
-
-* What makes continous access elevation tokens special?
-* Is there a way to acquire a token via the OAuth flow API with all the necessary scopes to access storage accounts and key vaults—one access token to rule them all?
-  * The token should have similar permissions or scopes to the one you get via interactive login using `Connect-AzAccount`.
+I recently completed the MCRTP exam from Pwnedlabs. The course offered a lot of vaulable insight that I felt the SANS GCPN glossed over. During the course, there were a couple of areas in Azure/O365 that caught my intrest. I wanted to circle back on after completing the exam.
     
-Another question I kept asking myself is, can other services or scopes be leveraged in some way within an organization’s tenant? It was mentioned during the MCRTP course that others were looking into Intune as something that could be leveraged within a tenant, but I had a different idea. What about using the blue team's tools against them? 
+The main question I kept asking myself was if other services or scopes could be leveraged in some way within an organization’s tenant? It was mentioned during the MCRTP course that others were looking into Intune as one possible way. However, I had a different idea. What about using the blue team's tools against them? 
 
 ## TLDR 
 If you get access to a principal who has the security reader, security operator or security administrator [Entra role](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference) assigned to it, or if you get an access token with the `ThreatHunting.Read.All` (Microsoft Graph Security API) or `AdvancedHunting.Read.All` (Microsoft Threat Protection) API permission/role. Then you can see all of the resources deployed in the tenant using the ExposureGraphNode schema in advanced threat hunting. These resources include sites, function apps, databases and their respective tables, storage accounts and their respective containers, key vaults, VMs, VNets, public IP addresses and more. Also, if you ever have the ability to start live response sessions and are able to do it on a high value machine like a domain controller. Then, you're basically `domain admin` and possibly well on your way to escalating to `global administrator`.
